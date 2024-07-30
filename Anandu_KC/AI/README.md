@@ -46,7 +46,7 @@ Linux/macOS:
 ## output
 
 
-![Output Example](https://github.com/Anandukc/gesture_based_media_control/blob/master/example.mp4)
+![Output Example](https://github.com/Anandukc/CountingChallenge/blob/main/Anandu_KC/AI/ss_with_AI.png)
 
 
 
