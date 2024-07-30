@@ -1,10 +1,10 @@
 ## Info
 
 ### Name
-<Satyaki Bhattacharjee>
+Satyaki Bhattacharjee
 
 ### Python Version
-<Python 3.11>
+Python 3.11
 
 ## Description
 
@@ -12,7 +12,7 @@
 <!-- Provide a brief summary on how the solution was derived using AI Technique -->
 
 ### Non_AI
-< Used opencv's cv2.inRange() function to create a mask. Used contours to find number of items>
+ Used opencv's cv2.inRange() function to create a mask. Used contours to find number of items. Not accurate but this is the best I could do
 
 
 
