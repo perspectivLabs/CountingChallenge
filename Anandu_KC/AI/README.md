@@ -42,7 +42,12 @@ Linux/macOS:
 ```bash
   python3 predict.py
 ```
-  
+
+## output
+
+
+![Output Example](https://github.com/Anandukc/gesture_based_media_control/blob/master/example.mp4)
+
 
 
 
