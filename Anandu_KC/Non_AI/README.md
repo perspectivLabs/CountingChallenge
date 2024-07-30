@@ -1,7 +1,7 @@
 # NON AI BASED COUNTING
 ## Description
 
-This Streamlit application, titled **Non AI Based Counting**, allows users to upload an image and count the number of screws using non-AI techniques. The application leverages OpenCV for image processing and displays both the binary thresholded image and the detected screws with contours side by side. Users can adjust the minimum area threshold to fine-tune the detection process.
+This Streamlit application, titled **Non AI Based Counting**, allows users to upload an image and count the number of screws or bolts using non-AI techniques. The application leverages OpenCV for image processing and displays both the binary thresholded image and the detected screws with contours side by side. Users can adjust the minimum area threshold to fine-tune the detection process.
 
 ## Features
 
@@ -34,10 +34,10 @@ Linux/macOS:
 
 ```bash
   # Create a virtual environment
-    python3 -m venv venv
+    python3 -m venv aivenv
 
   # Activate the virtual environment
-    source venv/bin/activate
+    source aivenv/bin/activate
   
 ```
 
