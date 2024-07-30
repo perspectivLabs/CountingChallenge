@@ -1,10 +1,10 @@
 ## Info
 
 ### Name
-<!-- Please enter your name as per submitted resume. -->
+<Satyaki Bhattacharjee>
 
 ### Python Version
-<!-- Please specify the Python version you used (e.g., Python 3.8). -->
+<Python 3.11>
 
 ## Description
 
@@ -12,7 +12,7 @@
 <!-- Provide a brief summary on how the solution was derived using AI Technique -->
 
 ### Non_AI
-<!-- Provide a brief summary on how the solution was derived using Non_AI Technique -->
+< Used opencv's cv2.inRange() function to create a mask. Used contours to find number of items>
 
 
 
