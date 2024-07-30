@@ -1,1 +1,1 @@
-print('solution for task1')
+print('solution for task2')
