@@ -162,5 +162,3 @@ cython_debug/
 #.idea/
 
 yolov8m-world.pt
-data/
-debug/
