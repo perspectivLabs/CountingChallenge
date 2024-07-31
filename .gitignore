@@ -153,8 +153,10 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-Satyaki/CountingChallenge/*
-
+Satyaki Bhattacharjee/AI/CountingChallenge/*
+Satyaki Bhattacharjee/AI/train2/*
+screw/*
+Satyaki Bhattacharjee/NON_AI/CountingChallenge/*
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
