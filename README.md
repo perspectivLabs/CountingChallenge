@@ -2,6 +2,7 @@
 
 ## Task definiton
 * Count the number of items in the image and overlay masks for the same.
+* Accuracy should be > 95%
 
 ## Task list
 1) Achieve the task definition using any Non-AI techniques (ex. OpenCV, etc)
