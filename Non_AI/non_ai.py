@@ -9,9 +9,8 @@ def process_image(image_path, output_dir):
 
     # Apply Gaussian blur
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-    # Edge detection
+    # Edge detection and finding contours
     edged = cv2.Canny(blurred, 30, 150)
-    # Find contours
     contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     # Draw contours
