@@ -7,15 +7,8 @@
 1) Achieve the task definition using any Non-AI techniques (ex. OpenCV, etc)
 2) Achieve the task definition using any AI techniques
 
-## Note
-* All tasks from the Task List are expected to be completed
-* Requirement files are expected to be added.
-* Colab/Kaggle notebooks can be used, but the ```ipynb``` file must be added.
-* The dataset is available [here](https://drive.google.com/drive/folders/1TuM4CgGI3WBqOHNFjuzjaEzLOH5Yw43_?usp=sharing).
-* Create a root folder with your name in the git.
-* There has to be 2 folders viz. "AI" and "Non_AI" containing solutions to the respectiv tasks within the above root folder.
+## Overview
+This repository provides two methods for detecting objects in images:
 
-## Steps to submit the solutions
-* Fork this repository.
-* Push the solution into the folders sepecified.
-* Raise a PR with your name as per resume to this repository from your forked repository.
+1. **Non-AI Approach**: Uses OpenCV for object detection.
+2. **AI Approach**: Utilizes a model trained on a dataset, hosted on Roboflow, with inference done via the Roboflow API.
