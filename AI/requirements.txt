@@ -1,0 +1,15 @@
+# General dependencies
+numpy 
+opencv-python
+torch
+torchvision
+matplotlib
+
+# YOLOv5 and YOLOv8 dependencies
+ultralytics
+
+# Faster R-CNN dependencies is included in torchvision
+# Mask R-CNN is included in torchvision'
+
+# For PIL(Python Imaging Library)
+Pillow
