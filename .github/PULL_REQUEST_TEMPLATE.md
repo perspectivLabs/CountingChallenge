@@ -1,20 +1,27 @@
 ## Info
 
 ### Name
-<!-- Please enter your name as per submitted resume. -->
+Satyaki Bhattacharjee
 
 ### Python Version
-<!-- Please specify the Python version you used (e.g., Python 3.8). -->
+Python 3.11
 
 ## Description
 
 ### AI
-<!-- Provide a brief summary on how the solution was derived using AI Technique -->
+Used YOLO V8 object dedtection AI/ML model. The ipynb is from Kaggle as I needed CUDA support for GPU Training.
+
+- First I used a data annotator tool to annotate the images of screws for training. The annotations are stored in "data.yaml"
+- Then I downloaded YOLO V8 from Ultralytics library. Trained it on the annotated images. Saved the best weights.
+- Then I used those weights to predict and count the number of screws.
+
+The number of images for training was low, and there were too many objects to annotate for a single person. More images with 10 - 15 objects per image would significantly increase the trained model's performance. 
 
 ### Non_AI
-<!-- Provide a brief summary on how the solution was derived using Non_AI Technique -->
+ Used opencv's cv2.inRange() function to create a mask. Used contours to find number of items. Not accurate but this is the best I could do.
 
 
 
 ## Additional Comments
-<!-- Optional: Add any additional comments or context about your changes here. -->
+
+Thank you for this task. I really appreciate the challenge. I gained significant knowledge through this assignment.

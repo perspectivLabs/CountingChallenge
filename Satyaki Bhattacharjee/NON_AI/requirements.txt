@@ -1,0 +1,6 @@
+gdown
+cvlib
+pandas
+numpy
+matplotlib
+opencv-python

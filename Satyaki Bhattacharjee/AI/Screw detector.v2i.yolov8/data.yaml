@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['Screws']
+
+roboflow:
+  workspace: screws-nsbl9
+  project: screw-detector-acasx
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/screws-nsbl9/screw-detector-acasx/dataset/2
