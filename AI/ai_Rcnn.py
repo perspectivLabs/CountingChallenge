@@ -1,12 +1,13 @@
 import torch
 import torchvision
 from torchvision.transforms import functional as F
+import numpy as np
 import cv2
 import os
 from PIL import Image
 
 def load_model():
-    # Load a pre-trained Faster R-CNN model
+    # pre-trained Faster R-CNN model
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
     model.eval()
     return model
@@ -14,9 +15,8 @@ def load_model():
 def process_image(model, image_path, output_dir):
     # Read the image
     image = Image.open(image_path).convert("RGB")
-    image_tensor = F.to_tensor(image).unsqueeze(0)  # Add batch dimension
+    image_tensor = F.to_tensor(image).unsqueeze(0)  
 
-    # Run inference
     with torch.no_grad():
         predictions = model(image_tensor)[0]
 
@@ -37,7 +37,6 @@ def process_image(model, image_path, output_dir):
             cv2.rectangle(image_cv, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 2)
             cv2.putText(image_cv, label, (box[0], box[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-    # Add text annotation for item and mask count
     cv2.putText(image_cv, f"Items Count: {num_items}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
     cv2.putText(image_cv, f"Masks Count: {num_masks}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 2, cv2.LINE_AA)
 
