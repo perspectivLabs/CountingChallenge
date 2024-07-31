@@ -19,4 +19,4 @@
 * Fork this repository.
 * Push the solution into the folders sepecified.
 * Raise a PR with your name as per resume to this repository from your forked repository.
-* Video LInk: here [https://youtu.be/E-jA6RUK_Cc]
+* Video LInk: [here] (https://youtu.be/E-jA6RUK_Cc)
