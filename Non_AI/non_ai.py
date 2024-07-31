@@ -18,6 +18,7 @@ def process_image(image_path, output_dir):
     output_image = image.copy()
     num_items = len(contours)
     num_masks = 0
+    
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
         cv2.rectangle(output_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -29,7 +30,7 @@ def process_image(image_path, output_dir):
     
     # Save the result
     if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+        os.makedirs(output_dir) 
         
     filename = os.path.basename(image_path)
     output_path = os.path.join(output_dir, filename)
