@@ -1,0 +1,6 @@
+streamlit==1.37.0
+opencv-python==4.8.1.78
+opencv-python-headless==4.8.1.78
+numpy==1.26.1
+matplotlib==3.7.1
+matplotlib-inline==0.1.6
