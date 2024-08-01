@@ -2,6 +2,7 @@
 
 ## Task definiton
 * Count the number of items in the image and overlay masks for the same.
+* Accuracy should be > 95%
 
 ## Task list
 1) Achieve the task definition using any Non-AI techniques (ex. OpenCV, etc)
@@ -19,3 +20,6 @@
 * Fork this repository.
 * Push the solution into the folders sepecified.
 * Raise a PR with your name as per resume to this repository from your forked repository.
+* Cleanup unwanted files by putting the path in the .gitignore.
+* No need of including the data files into GIT.
+* Write or provide the training method used for AI training purpose if any. 
