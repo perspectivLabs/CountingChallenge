@@ -1,0 +1,3 @@
+git+https://github.com/ChaoningZhang/MobileSAM.git
+timm
+opencv-python matplotlib
