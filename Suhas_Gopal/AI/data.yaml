@@ -1,0 +1,21 @@
+path: ../data/MVTec_Screws/yolov8  # dataset root dir
+train: images/train  # train images (relative to 'path') 4 images
+val: images/val  # val images (relative to 'path') 4 images
+test:  # test images (optional)
+
+names:
+  0: type_00
+  1: type_01
+  2: type_02
+  3: type_03
+  4: type_04
+  5: type_05
+  6: type_06
+  7: type_07
+  8: type_08
+  9: type_09
+  10: type_10
+  11: type_11
+  12: type_12
+  13: type_13
+  14: type_14
