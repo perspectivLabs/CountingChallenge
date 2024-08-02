@@ -22,4 +22,5 @@
 * Raise a PR with your name as per resume to this repository from your forked repository.
 * Cleanup unwanted files by putting the path in the .gitignore.
 * No need of including the data files into GIT.
-* Write or provide the training method used for AI training purpose if any. 
+* Write or provide the training method used for AI training purpose if any.
+* 
