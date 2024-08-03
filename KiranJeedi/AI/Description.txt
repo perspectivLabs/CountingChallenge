@@ -1,0 +1,7 @@
+Training:
+Trained a custom YOLOv5 model using the provided data by splitting it into an 80:20 ratio for training and validation. The training was conducted on an NVIDIA RTX A5000 with CUDA 12.2 for 300 epochs, using a batch size of 16 and optimized hyperparameters. The model achieved an F1 score of 0.94 for one class, a confusion matrix accuracy of 0.97, and a precision-recall curve with all classes achieving 1.00 at 0.871.
+Additionally, another pre-trained model was used, achieving an F1 confidence curve of 0.99 for all classes at 0.606.
+
+Test:
+The test results were obtained using yolov5 detection, with slight modifications in preprocessing and adjustments to the confidence threshold and non-maximum suppression (NMS).
+Inference results from both the custom-trained model and the pre-trained model were saved in separate folders, each named accordingly.
