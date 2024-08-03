@@ -1,0 +1,5 @@
+opencv-python
+jupyter
+plotly==5.23.0
+pandas
+nbstripout
