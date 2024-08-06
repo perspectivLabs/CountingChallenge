@@ -1,0 +1,11 @@
+# Required packages for object detection and processing
+torch==2.0.1
+transformers==4.30.0
+Pillow==9.5.0
+detectron2==0.6
+matplotlib==3.8.0
+numpy==1.24.4
+
+# Optional: For data handling and additional utilities
+scipy==1.10.1
+scikit-learn==1.2.2
