@@ -17,4 +17,4 @@ The steps used in exeuting the project are as follows:
   * The next thing after training is to run a test image and count the number of boxes as it gives the number of items in the image.
   * After training the result of the test image are displayed.
 
-## Both techniques yield a better results if the training dataset has more images. Also it is not a probelm with the low number of dataset as we can train this on small models and then detect the items. ##
+## Both techniques yield a good results ensuring a great perfomance in terms of accuracy and the way the models works even when the trainng samples are very less. There are still lot of models that can be trained and they might yield a better result. The one i tried is with YOLOv8 and that performs pretty well. ##
