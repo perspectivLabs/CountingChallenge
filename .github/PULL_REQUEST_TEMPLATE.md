@@ -1,18 +1,23 @@
 ## Info
 
 ### Name
+<!-- Siddesh S Shenoy -->
 <!-- Please enter your name as per submitted resume. -->
 
 ### Python Version
-<!-- Please specify the Python version you used (e.g., Python 3.8). -->
+<!-- Python 3.12 -->
 
 ## Description
+<!-- Submission for the counting challenge -->
+
 
 ### AI
 <!-- Provide a brief summary on how the solution was derived using AI Technique -->
 
 ### Non_AI
 <!-- Provide a brief summary on how the solution was derived using Non_AI Technique -->
+<!-- gaussian blur, thresholding, contour detection was used using OpenCV
+ and mask overlay was achieved  using  cv2.drawContours -->
 
 
 
