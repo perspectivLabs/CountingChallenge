@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['screw']
+
+roboflow:
+  workspace: beard-seg
+  project: screws-wvbio
+  version: 5
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/beard-seg/screws-wvbio/dataset/5
