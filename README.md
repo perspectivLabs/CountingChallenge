@@ -1,25 +1,81 @@
-# CountingChallenge
+# Counting Challenge
 
-## Task definiton
-* Count the number of items in the image and overlay masks for the same.
-* Accuracy should be > 95%
+This repository contains solutions to the Counting Challenge, which involves counting the number of items (screws/bolts) in images and overlaying masks for the same.
 
-## Task list
-1) Achieve the task definition using any Non-AI techniques (ex. OpenCV, etc)
-2) Achieve the task definition using any AI techniques
+## Task Definition
 
-## Note
-* All tasks from the Task List are expected to be completed
-* Requirement files are expected to be added.
-* Colab/Kaggle notebooks can be used, but the ```ipynb``` file must be added.
-* The dataset is available [here](https://drive.google.com/drive/folders/1TuM4CgGI3WBqOHNFjuzjaEzLOH5Yw43_?usp=sharing).
-* Create a root folder with your name in the git.
-* There has to be 2 folders viz. "AI" and "Non_AI" containing solutions to the respectiv tasks within the above root folder.
+- Count the number of items in the image and overlay masks for the same
+- Achieve accuracy > 95%
 
-## Steps to submit the solutions
-* Fork this repository.
-* Push the solution into the folders sepecified.
-* Raise a PR with your name as per resume to this repository from your forked repository.
-* Cleanup unwanted files by putting the path in the .gitignore.
-* No need of including the data files into GIT.
-* Write or provide the training method used for AI training purpose if any. 
+## Solutions Provided
+
+This repository contains two solutions to the challenge:
+
+1. **Non-AI Solution** (in the `Non_AI` folder):
+   - Uses classical computer vision techniques with OpenCV
+   - Implements both Otsu's and Adaptive thresholding methods
+   - Selects the best result for each image
+
+2. **AI Solution** (in the `AI` folder):
+   - Uses YOLOv5, a deep learning object detection model
+   - Bootstraps training with a semi-supervised approach
+   - Provides more robust results on complex images
+
+## Dataset
+
+The dataset consists of two folders of images:
+- `ScrewAndBolt_20240713` - Contains larger images with various screws and bolts
+- `Screws_2024_07_15` - Contains smaller images with screws
+
+## Requirements
+
+Each solution has its own requirements file. Please refer to the respective README files in each solution folder for detailed instructions.
+
+## How to Run
+
+Please refer to the README files in each solution folder for detailed instructions on how to run the respective solutions.
+
+## Results
+
+Both solutions generate:
+- Annotated images with object masks
+- Count information displayed on the images
+- Console output summarizing the results
+
+The AI solution generally performs better on:
+- Images with poor lighting conditions
+- Images with overlapping objects
+- Complex backgrounds
+
+## Comparison between Non-AI and AI Solutions
+
+| Aspect | Non-AI Solution | AI Solution |
+|--------|----------------|-------------|
+| Setup time | Fast (no training required) | Slower (requires training) |
+| Processing speed | Very fast | Moderate (faster during inference) |
+| Accuracy | Good on clean images | Better overall, especially on complex images |
+| Robustness | Sensitive to lighting, overlap | More robust to variations |
+| Scalability | Limited to similar images | Can generalize to new images |
+
+## Submission Guidelines
+
+To submit your solution:
+
+1. Fork this repository
+2. Create a root folder with your name as per your resume
+3. Inside your named folder, create two subfolders:
+   - `AI/` - For the AI-based solution
+   - `Non_AI/` - For the Non-AI solution
+4. Add all necessary code, requirements files, and documentation
+5. Do NOT include dataset files in your submission
+6. Clean up any unwanted files by adding them to `.gitignore`
+7. Raise a PR with your name to this repository from your forked repository
+
+## Cleanup Guidelines
+
+Before submitting your PR, ensure you have:
+- Removed all dataset files
+- Removed result folders (they can be regenerated)
+- Removed any model weight files (*.pt, *.weights, *.onnx)
+- Removed any unnecessary files (e.g., __pycache__, .DS_Store)
+- Added proper documentation for your solutions 

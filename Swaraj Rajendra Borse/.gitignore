@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Dataset folders - as per requirements, no need to include data files
+**/dataset*/
+**/Screws_2024_07_15/
+**/ScrewAndBolt_20240713/
+
+# Results
+**/results*/
+**/yolo_results*/
+
+# Model weights
+*.pt
+*.weights
+*.onnx
+
+# Misc
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo

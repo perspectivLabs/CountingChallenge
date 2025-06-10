@@ -160,3 +160,32 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Dataset folders - as per requirements, no need to include data files
+**/dataset*/
+**/Screws_2024_07_15/
+**/ScrewAndBolt_20240713/
+
+# Results folders
+**/results*/
+**/yolo_results*/
+
+# Model weights
+*.pt
+*.weights
+*.onnx
+
+# Misc
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Duplicate folders to be cleaned up
+/CountingChallenge/
+/yolov5/
+/AI/
+/Non_AI/
+/results_Screws/
+/results_ScrewAndBolt/
