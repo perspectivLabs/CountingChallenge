@@ -1,25 +1,71 @@
-# CountingChallenge
+# 🔧 Screw and Bolt Detection Project  
+**Author:** Akshat Singh  
+**Objective:** Detect and count the number of **screws** and **bolts** in images using both AI and Non-AI methods with >95% accuracy.
 
-## Task definiton
-* Count the number of items in the image and overlay masks for the same.
-* Accuracy should be > 95%
+---
 
-## Task list
-1) Achieve the task definition using any Non-AI techniques (ex. OpenCV, etc)
-2) Achieve the task definition using any AI techniques
+## 📌 Problem Statement
 
-## Note
-* All tasks from the Task List are expected to be completed
-* Requirement files are expected to be added.
-* Colab/Kaggle notebooks can be used, but the ```ipynb``` file must be added.
-* The dataset is available [here](https://drive.google.com/drive/folders/1TuM4CgGI3WBqOHNFjuzjaEzLOH5Yw43_?usp=sharing).
-* Create a root folder with your name in the git.
-* There has to be 2 folders viz. "AI" and "Non_AI" containing solutions to the respectiv tasks within the above root folder.
+The goal of this project is to develop two separate systems:
 
-## Steps to submit the solutions
-* Fork this repository.
-* Push the solution into the folders sepecified.
-* Raise a PR with your name as per resume to this repository from your forked repository.
-* Cleanup unwanted files by putting the path in the .gitignore.
-* No need of including the data files into GIT.
-* Write or provide the training method used for AI training purpose if any. 
+1. 🔍 **Non-AI Solution** using classical image processing (OpenCV)
+2. 🤖 **AI Solution** using object detection (YOLOv8 + Roboflow)
+
+Each system should detect, count, and visualize screw and bolt positions in static images.
+
+---
+
+
+---
+
+## 🧠 AI-Based Approach
+
+### 🚀 Tools Used:
+- [Roboflow](https://roboflow.com) – For dataset labeling and augmentation
+- [YOLOv8 (Ultralytics)](https://docs.ultralytics.com) – For object detection
+- OpenCV, Matplotlib – For image loading and annotation
+
+### 📦 Dataset:
+- Custom screw and bolt dataset
+- Annotated and exported from Roboflow in YOLOv8 format
+
+### 🧪 Model Training:
+- Trained using YOLOv8 with 50 epochs
+- Custom classes:
+  - `0`: Screw
+  - `1`: Bolt
+
+### 🧾 Output:
+- Annotated image with bounding boxes
+- Console output for detected class, confidence, and total count
+
+
+---
+
+## 🛠️ Non-AI (OpenCV) Approach
+
+### 🧰 Tools Used:
+- OpenCV for grayscale conversion, thresholding, and contour detection
+- NumPy, Matplotlib for numerical operations and visualization
+
+### ⚙️ Steps:
+- Preprocess the image (blur, threshold, morphology)
+- Detect contours
+- Filter based on contour area
+- Estimate screw/bolt count using median contour area logic
+
+### 📊 Output:
+- Annotated image with contours
+- Histogram of object areas
+- Console output of estimated item count
+
+
+---
+
+## 📦 Dependencies
+
+Install all required Python libraries via:
+
+```bash
+pip install -r requirements.txt
+
