@@ -1,0 +1,10 @@
+opencv-python
+matplotlib 
+numpy
+ultralytics
+torch 
+torchvision 
+pillow
+transformers
+python-dotenv
+groq
