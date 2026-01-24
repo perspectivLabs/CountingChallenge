@@ -1,0 +1,7 @@
+opencv-python>=4.8.0
+numpy>=1.23.0
+ultralytics>=8.0.0
+torch
+torchvision
+scikit-image
+scipy
