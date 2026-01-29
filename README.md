@@ -1,4 +1,4 @@
-# CountingChallenge
+# AI-based & Non-AI-based counters
 
 ## Task definiton
 * Count the number of items in the image and overlay masks for the same.
