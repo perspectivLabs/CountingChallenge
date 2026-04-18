@@ -1,25 +1,131 @@
-# CountingChallenge
+# Count the number of items in the image and overlay masks
 
-## Task definiton
-* Count the number of items in the image and overlay masks for the same.
-* Accuracy should be > 95%
+## Overview
+This project focuses on detecting and counting items in images, along with generating visual masks for detected items.
 
-## Task list
-1) Achieve the task definition using any Non-AI techniques (ex. OpenCV, etc)
-2) Achieve the task definition using any AI techniques
+Two approaches have been implemented:
 
-## Note
-* All tasks from the Task List are expected to be completed
-* Requirement files are expected to be added.
-* Colab/Kaggle notebooks can be used, but the ```ipynb``` file must be added.
-* The dataset is available [here](https://drive.google.com/drive/folders/1TuM4CgGI3WBqOHNFjuzjaEzLOH5Yw43_?usp=sharing).
-* Create a root folder with your name in the git.
-* There has to be 2 folders viz. "AI" and "Non_AI" containing solutions to the respectiv tasks within the above root folder.
+-  Non-AI Approach (Classical Computer Vision)
+-  AI Approach (YOLOv8 Object Detection)
 
-## Steps to submit the solutions
-* Fork this repository.
-* Push the solution into the folders sepecified.
-* Raise a PR with your name as per resume to this repository from your forked repository.
-* Cleanup unwanted files by putting the path in the .gitignore.
-* No need of including the data files into GIT.
-* Write or provide the training method used for AI training purpose if any. 
+---
+
+#  Approach 1: Non-AI (Classical CV)
+
+##  Method
+- Grayscale conversion  
+- Thresholding (Adaptive / Otsu)  
+- Morphological operations (Open + Close)  
+- Connected Components Analysis  
+- Area-based filtering  
+- Watershed (for clustered objects)  
+
+---
+
+##  How to Run (Non-AI)
+
+```bash
+python Non_AI.py screws <input_image> [output_image]
+```
+
+```bash
+python Non_AI.py nuts <input_image> [output_image]
+```
+
+### Example:
+
+```bash
+python Non_AI.py screws sample.jpg output.jpg
+```
+
+```bash
+python Non_AI.py nuts sample.jpg output.jpg
+```
+
+---
+
+## Calibration (Non-AI)
+
+Calibration is used to estimate the area of a single object.
+
+```bash
+python Non_AI.py calibrate <input_image> [screws|nuts]
+```
+
+---
+
+##  Why Calibration is Required
+
+- Objects may overlap or touch each other  
+- Multiple objects can appear as a single connected component  
+- Calibration helps estimate how many objects exist in each blob  
+
+---
+
+# 🔹 Approach 2: AI (YOLOv8)
+
+##  Model Details
+- Model: YOLOv8s  
+- Epochs: 150  
+- Image Size: 1024x1024  
+- Single-class detection used for improved counting  
+
+---
+
+##  Training
+
+```python
+from ultralytics import YOLO
+
+model = YOLO("yolov8s.pt")
+
+model.train(
+    data="data.yaml",
+    epochs=150,
+    imgsz=1024
+)
+```
+
+---
+
+##  How to Run (AI)
+
+```bash
+python AI.py --model <path_to_model> --input <input_image> --output <output_image>
+```
+
+---
+
+#  Installation
+
+## Create virtual environment
+
+```bash
+python3 -m venv venv
+```
+
+## Activate it 
+### Linux/Mac
+
+```bash
+source venv/bin/activate
+```
+### Windows
+
+```bash
+venv\Scripts\activate
+```
+### Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+#  Dataset
+
+- Annotated dataset using Roboflow 
+- Dataset not included as per instructions  
+
+
