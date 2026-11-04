@@ -176,3 +176,8 @@ Om_Rode/AI/labels_sam/flags/
 Om_Rode/AI/labels_sam/masks_auto/
 Om_Rode/AI/train_log.txt
 Om_Rode/AI/regen_log.txt
+Om_Rode/report/*.aux
+Om_Rode/report/*.log
+Om_Rode/report/*.fls
+Om_Rode/report/*.fdb_latexmk
+Om_Rode/report/*.out
