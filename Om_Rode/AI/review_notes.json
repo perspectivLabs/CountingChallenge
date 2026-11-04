@@ -1,0 +1,127 @@
+{
+ "20240713_192951": {
+  "gt": 21,
+  "auto": 21,
+  "note": "Hand-counted: 21. SAM first split these pan-head screws into head + shank; the size-based part merging fixed it."
+ },
+ "20240713_193135": {
+  "gt": 21,
+  "auto": 20,
+  "note": "Corrected +1: a black screw at the left of the cluster had no mask; added with one SAM point prompt. Hand-counted: 21."
+ },
+ "20240713_193650": {
+  "gt": 10,
+  "auto": 10,
+  "note": "Hand-counted: 10 (four screws touching at the top, two pairs below)."
+ },
+ "20240713_193659": {
+  "gt": 10,
+  "auto": 10,
+  "note": "Hand-counted: 10. All counts agree."
+ },
+ "20240713_193831": {
+  "gt": 193,
+  "auto": 190,
+  "note": "Corrected +3: one missed black screw added; two masks that each covered two crossing screws were split. Remaining flags are screws where SAM masked only the head or only the shank; the count is unaffected."
+ },
+ "20240713_193839": {
+  "gt": 195,
+  "auto": 194,
+  "note": "Corrected +1: one mask covering two crossing screws was split."
+ },
+ "20240713_193907": {
+  "gt": 193,
+  "auto": 188,
+  "note": "Corrected +5: four masks each covering a screw plus a neighbouring upright screw head were split, and mask 159 (a screw merged with a disc, confirmed by the user) was split."
+ },
+ "20240713_194200": {
+  "gt": 98,
+  "auto": 98,
+  "note": "No correction. Remaining flags are screws where SAM masked only the head or only the shank; the count is unaffected. Non-AI over-counts here (114) because discs and screws have different areas."
+ },
+ "20240713_194206": {
+  "gt": 99,
+  "auto": 97,
+  "note": "Corrected +2: two black screws with no mask were added. Remaining flags are screws where SAM masked only the head or only the shank; the count is unaffected."
+ },
+ "20240713_194215": {
+  "gt": 98,
+  "auto": 98,
+  "note": "No correction. Remaining flags are screws where SAM masked only the head or only the shank; the count is unaffected."
+ },
+ "20240713_194232": {
+  "gt": 98,
+  "auto": 97,
+  "note": "Corrected +1: a screw merged with an upright screw head was split. Remaining flags are screws where SAM masked only the head or only the shank; the count is unaffected."
+ },
+ "20240713_194256": {
+  "gt": 98,
+  "auto": 96,
+  "note": "Corrected +2: two merged pairs were split. Remaining flags are screws where SAM masked only the head or only the shank; the count is unaffected."
+ },
+ "20240713_194316": {
+  "gt": 99,
+  "auto": 98,
+  "note": "Corrected +1: one V-shaped pair was split. Remaining flags are screws where SAM masked only the head or only the shank; the count is unaffected."
+ },
+ "20240713_194541": {
+  "gt": 354,
+  "auto": 354,
+  "note": "Hex nuts: every one of the 354 masks contains exactly one round hole, and all five shots of this pile give 354. Small hole-count differences (353/355) come from the classical hole detector, not the labels."
+ },
+ "20240713_194551": {
+  "gt": 354,
+  "auto": 354,
+  "note": "Hex nuts: every one of the 354 masks contains exactly one round hole, and all five shots of this pile give 354. Small hole-count differences (353/355) come from the classical hole detector, not the labels."
+ },
+ "20240713_194606": {
+  "gt": 354,
+  "auto": 354,
+  "note": "Hex nuts: every one of the 354 masks contains exactly one round hole, and all five shots of this pile give 354. Small hole-count differences (353/355) come from the classical hole detector, not the labels."
+ },
+ "20240713_194621": {
+  "gt": 354,
+  "auto": 354,
+  "note": "Hex nuts: every one of the 354 masks contains exactly one round hole, and all five shots of this pile give 354. Small hole-count differences (353/355) come from the classical hole detector, not the labels."
+ },
+ "20240713_194630": {
+  "gt": 354,
+  "auto": 354,
+  "note": "Hex nuts: every one of the 354 masks contains exactly one round hole, and all five shots of this pile give 354. Small hole-count differences (353/355) come from the classical hole detector, not the labels."
+ },
+ "img1": {
+  "gt": 43,
+  "auto": 43,
+  "note": "43 screws, the same in all seven shots of this layout. Matches the '43' in the file name img1_43_nosy and the Non-AI count."
+ },
+ "img1_43_nosy": {
+  "gt": 43,
+  "auto": 43,
+  "note": "Noisy copy of img1. 43, as the file name says."
+ },
+ "img2": {
+  "gt": 43,
+  "auto": 43,
+  "note": "Same 43-screw layout as img1, re-shot. All three counts agree."
+ },
+ "img3": {
+  "gt": 43,
+  "auto": 43,
+  "note": "Second 43-screw layout (lens vignette in the corners is ignored). All three counts agree."
+ },
+ "img4": {
+  "gt": 43,
+  "auto": 43,
+  "note": "Same layout as img3. All counts agree."
+ },
+ "img5": {
+  "gt": 43,
+  "auto": 43,
+  "note": "Same layout as img3. All counts agree."
+ },
+ "img6": {
+  "gt": 43,
+  "auto": 43,
+  "note": "Same layout as img3. All counts agree."
+ }
+}
