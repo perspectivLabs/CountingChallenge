@@ -165,3 +165,13 @@ cython_debug/
 data/
 *.zip
 *.tar.gz
+
+# Generated run outputs (keep gitkeep and sample)
+Athira_PT/Non_AI/output/*
+!Athira_PT/Non_AI/output/.gitkeep
+!Athira_PT/Non_AI/output/sample_overlay.jpg
+Athira_PT/AI/output/*
+!Athira_PT/AI/output/.gitkeep
+!Athira_PT/AI/output/sample_overlay.jpg
+runs/
+*.pt
