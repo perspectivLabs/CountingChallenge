@@ -175,3 +175,6 @@ Athira_PT/AI/output/*
 !Athira_PT/AI/output/sample_*.jpg
 runs/
 *.pt
+
+# Generated YOLO pseudo-label tiles
+Athira_PT/AI/_dataset/

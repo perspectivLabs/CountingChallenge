@@ -1,106 +1,74 @@
 # Counting Challenge Solutions
 
-**Candidate:** Athira PT  
-**Accuracy Target:** > 95%  
-**Achieved Accuracy:**  
-- **Non-AI Solution (OpenCV):** **99.0%**  
-- **AI Solution (FastSAM Foundation Model):** **99.34%**  
+**Candidate:** Athira PT
+**Target:** count the objects in each image and overlay a mask for each one, with > 95 % accuracy.
 
----
+## 1. Results
 
-## 1. Problem Statement & Scope
+Measured against hand-counted ground truth (`ground_truth.csv`, 25 images). Accuracy per image = `100 * (1 - |detected - truth| / truth)`.
 
-The objective of this challenge is to:
-1. Detect and count all hardware objects in the input images.
-2. Generate and overlay precise pixel-level segmentation masks for each detected item.
-3. Deliver two complete solutions:
-   - **Non-AI:** Classical Computer Vision using OpenCV (illumination modeling + differential thresholding + peak watershed).
-   - **AI:** Pretrained Vision Foundation Model (FastSAM trained on 1.1 Billion masks) for zero-shot instance segmentation without small-data fine-tuning.
-4. Exceed the **> 95% accuracy** requirement on ground-truth benchmark data.
+| | Non-AI (OpenCV) | AI (fine-tuned YOLOv8-seg) |
+|---|---|---|
+| **Screws** (7 images, 43 screws each) | **100.0 %** (7/7 above 95 %) | **100.0 %** (7/7 above 95 %) |
+| **ScrewAndBolt** (18 images, 10 to 354 objects) | **97.5 %** (15/18 above 95 %) | **92.5 %** (6/18 above 95 %) |
 
----
+* Both solutions reach the target on **Screws**.
+* On **ScrewAndBolt** only the Non-AI solution reaches the target on average (97.5 %). The AI solution averages 92.5 % and is below 95 % on 12 of 18 images, mainly under-counting overlapping screws.
+* **Tuning caveat:** the counting parameters of both solutions were tuned on the same 18 ScrewAndBolt images that produce the ScrewAndBolt scores, so those scores are tuned, not held-out results. For the AI model, `Screws/img5` and `img6` were held out of training (both 100 %).
 
-## 2. Directory Structure & Tracked Deliverables
+## 2. About the data
 
-All code, notebooks, requirements, and visual artifacts are organized under the candidate root folder `Athira_PT/`:
+`Screws` are clean top-down photos of separate screws. `ScrewAndBolt` contains backlit photos of screws (seen from the side) and **hex nuts**, at different zoom levels, from 10 objects up to piles of 354 touching objects. That is why a simple threshold or a "segment everything" model fails there; see the two READMEs for the details.
+
+## 3. Directory structure
 
 ```
 Athira_PT/
-├── README.md                             # Comparative Summary & Quick Start (this file)
-├── Non_AI/                               # Task 1: Classical Computer Vision (OpenCV)
-│   ├── count_and_mask.py                 # Standalone inference & evaluation script
-│   ├── non_ai_solution.ipynb             # Pre-rendered executed Jupyter notebook (3.26 MB)
-│   ├── requirements.txt                  # Non-AI Python dependencies
-│   ├── README.md                         # Non-AI technical documentation
-│   └── output/
-│       ├── .gitkeep                      # Git keep placeholder
-│       ├── sample_screws_overlay.jpg     # Example overlay: Screws dataset (43 Objects)
-│       └── sample_screw_and_bolt_overlay.jpg # Example overlay: ScrewAndBolt dataset (48 Objects)
-└── AI/                                   # Task 2: Deep Learning & Vision AI
-    ├── count_and_mask.py                 # Production AI inference module
-    ├── ai_solution.ipynb                 # Pre-rendered executed Jupyter notebook (2.79 MB)
-    ├── requirements.txt                  # AI Python dependencies
-    ├── README.md                         # AI technical documentation
-    └── output/
-        ├── .gitkeep                      # Git keep placeholder
-        ├── sample_screws_overlay.jpg     # Example overlay: Screws dataset (43 Objects)
-        └── sample_screw_and_bolt_overlay.jpg # Example overlay: ScrewAndBolt dataset (56 Objects)
+├── README.md             # this file
+├── ground_truth.csv      # hand-counted number of objects per image (used by both evaluators)
+├── Non_AI/               # Task 1: classical computer vision
+│   ├── count_and_mask.py
+│   ├── non_ai_solution.ipynb
+│   ├── requirements.txt
+│   ├── README.md
+│   └── output/           # sample overlays (other generated files are git-ignored)
+└── AI/                   # Task 2: AI
+    ├── count_and_mask.py # tiled inference + evaluator
+    ├── train_yolo.py     # pseudo-label tiling + training
+    ├── ai_solution.ipynb
+    ├── requirements.txt
+    ├── README.md
+    └── output/           # sample overlays (other generated files are git-ignored)
 ```
 
----
+## 4. Methods in one paragraph each
 
-## 3. Executive Benchmark Comparison
+* **Non-AI** - robust polynomial background fit and threshold give a silhouette. Each connected blob is one object or a group. Piles of nuts are counted by their round holes (one nut per hole, Voronoi split); other groups by `round(blob area / single-object area)` with k-means splitting. Details: `Non_AI/README.md`.
+* **AI** - `yolov8n-seg` fine-tuned on pseudo-labels produced by the Non-AI pipeline (no manual labels exist), trained and run on overlapping 640 px tiles at native resolution, with a cross-tile duplicate merge. Training recipe: `AI/README.md` and `AI/train_yolo.py`.
 
-| Evaluation Metric | Classical Non-AI Approach | Deep Learning AI Approach |
-| :--- | :--- | :--- |
-| **Primary Method** | Morphological Illumination Model + Differential Thresholding + Peak Watershed | Pretrained FastSAM (SA-1B Zero-Shot Instance Segmentation) |
-| **Accuracy on Benchmark (`data/Screws`)** | **99.0%** (Mean: 42.6 / 43 items) | **99.34%** (Mean: 43.3 / 43 items) |
-| **Target Threshold (> 95%)** | **PASSED** (Exceeded by +4.0%) | **PASSED** (Exceeded by +4.34%) |
-| **Training Requirements** | None (rule-based CV) | None (pretrained foundation model, no fine-tuning needed) |
-| **Dense Cluster Resolution** | Distance Transform peak decomposition | Deep multi-scale feature maps |
-| **Inference Latency** | ~40 ms / image (CPU) | ~25 ms / image (CUDA GPU) |
-| **Executed Jupyter Notebook** | `Non_AI/non_ai_solution.ipynb` | `AI/ai_solution.ipynb` |
+## 5. Quick start
 
----
-
-## 4. Quick Start Guide
-
-### 1. Environment Setup
 ```bash
-git clone https://github.com/a-pt/CountingChallenge.git
+git clone <your-fork-url>
 cd CountingChallenge
-
 python -m venv venv
-.\venv\Scripts\activate   # Windows
-# source venv/bin/activate # Linux/macOS
-
+.\venv\Scripts\activate        # Windows  (source venv/bin/activate on Linux/macOS)
 pip install -r requirements.txt
 ```
+The datasets go in `data/Screws` and `data/ScrewAndBolt` (not committed).
 
-### 2. Running Non-AI Pipeline
 ```bash
+# Non-AI
 cd Athira_PT/Non_AI
-
-# Run on Screws dataset:
-python count_and_mask.py --input ../../data/Screws --output_dir output/Screws
-
-# Run on ScrewAndBolt dataset:
+python count_and_mask.py --input ../../data/Screws       --output_dir output/Screws
 python count_and_mask.py --input ../../data/ScrewAndBolt --output_dir output/ScrewAndBolt
 
-# Run on a single image:
-python count_and_mask.py --input ../../data/Screws/img1.jpg --output_dir output/
+# AI: train once (about 35 min on a GTX 1660 Ti), then evaluate
+cd ../AI
+python train_yolo.py --data ../../data --epochs 50 --batch 4
+cp runs/screw_seg/weights/best.pt screw_seg.pt
+python count_and_mask.py --input ../../data/Screws       --output_dir output/Screws
+python count_and_mask.py --input ../../data/ScrewAndBolt --output_dir output/ScrewAndBolt
 ```
 
-### 3. Running AI Pipeline
-```bash
-cd Athira_PT/AI
-
-# Run on Screws dataset:
-python count_and_mask.py --input ../../data/Screws --output_dir output/Screws --conf 0.55
-
-# Run on ScrewAndBolt dataset:
-python count_and_mask.py --input ../../data/ScrewAndBolt --output_dir output/ScrewAndBolt --conf 0.55
-
-# Run on a single image:
-python count_and_mask.py --input ../../data/Screws/img1.jpg --output_dir output/
-```
+Both scripts print the detected count, the ground truth and the accuracy for every image, and write overlay images and binary masks to the output folder. Trained weights (`*.pt`) are git-ignored, so the AI model must be trained with the commands above.
