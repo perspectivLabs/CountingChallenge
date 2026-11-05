@@ -160,3 +160,33 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# --- CountingChallenge submission ---
+# Dataset and any other image data: never committed.
+data/
+*.zip
+*.jpg
+*.jpeg
+*.png
+# ...except the small result images that document each solution.
+!Saravana_Perumal_Natarajan/*/results/*.jpg
+!Saravana_Perumal_Natarajan/*/results/*.png
+
+# Generated files (rebuilt by the scripts)
+datasets/
+runs/
+outputs/
+*.log
+*.npz
+Saravana_Perumal_Natarajan/GroundTruth/sam/
+Saravana_Perumal_Natarajan/GroundTruth/work/
+
+# Model weights (downloaded on first use)...
+weights/
+*.pt
+*.pth
+*.onnx
+# ...except the trained AI model, which is part of the submission (6 MB).
+!Saravana_Perumal_Natarajan/AI/model/*.pt
+
+.DS_Store

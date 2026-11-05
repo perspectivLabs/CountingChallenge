@@ -1,0 +1,16 @@
+[project]
+name = "counting-non-ai"
+version = "0.1.0"
+description = "Count objects and draw masks with classical image processing (OpenCV)."
+requires-python = ">=3.12"
+dependencies = [
+    "ipykernel>=7.4.0",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.4",
+    "opencv-python>=5.0.0.93",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.3",
+]
