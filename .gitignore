@@ -160,3 +160,13 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+# Counting challenge
+data/
+*.zip
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+Hemalatha_Yagitala/AI/dataset/
+Hemalatha_Yagitala/AI/runs/
+Hemalatha_Yagitala/Non_AI/results/masks/
+*.cache
