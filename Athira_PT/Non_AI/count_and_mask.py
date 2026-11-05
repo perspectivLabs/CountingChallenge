@@ -1,7 +1,7 @@
 """
-Non-AI Item Counting and Mask Overlay Pipeline
+Non-AI Item Counting and Mask Overlay Pipeline (Dual-Class: Screws & Bolts)
 Author: Athira PT
-Task: Count screws/bolts in images and overlay precise masks using traditional Computer Vision (OpenCV).
+Task: Count screws and bolts in images and overlay precise masks using traditional Computer Vision (OpenCV).
 Accuracy Target: > 95%
 """
 
@@ -13,45 +13,89 @@ import cv2
 import numpy as np
 
 
+def classify_fastener(area_norm, thickness_norm):
+    """
+    Classify a fastener as 'Bolt' or 'Screw' based on physical geometry:
+    - Bolts have thick shanks (thickness >= 65px at scale 1600) or large hex heads/area (>= 3500px).
+    - Screws have thinner shanks and smaller area (thickness < 65px, area < 3500px).
+    """
+    if thickness_norm >= 65.0 or area_norm >= 3500.0:
+        return "Bolt"
+    else:
+        return "Screw"
+
+
+def segment_dense_cluster(roi_mask, offset_xy, scale=1.0):
+    """
+    Decomposes a dense cluster of touching fasteners using Distance Transform
+    local peak detection and watershed segmentation.
+    """
+    x_off, y_off = offset_xy
+    dist = cv2.distanceTransform(roi_mask, cv2.DIST_L2, 5)
+    
+    # Dynamic peak threshold based on maximum distance inside the cluster
+    k_size = 9
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k_size, k_size))
+    dilated = cv2.dilate(dist, kernel)
+    
+    # Local maxima at least 6px from boundaries and 25% of peak
+    peaks = (dist == dilated) & (dist > max(6.0, 0.22 * dist.max()))
+    
+    _, markers = cv2.connectedComponents(peaks.astype(np.uint8))
+    num_peaks = np.max(markers)
+    
+    if num_peaks <= 1:
+        cnts, _ = cv2.findContours(roi_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        return [c + [x_off, y_off] for c in cnts if cv2.contourArea(c) > 30]
+
+    # Watershed on inverted distance map
+    roi_bgr = cv2.cvtColor(roi_mask, cv2.COLOR_GRAY2BGR)
+    sure_bg = cv2.dilate(roi_mask, kernel, iterations=2)
+    unknown = cv2.subtract(sure_bg, (peaks * 255).astype(np.uint8))
+    markers = markers + 1
+    markers[unknown == 255] = 0
+    
+    cv2.watershed(roi_bgr, markers)
+    
+    sub_contours = []
+    for mid in range(2, num_peaks + 2):
+        sub_mask = (markers == mid).astype(np.uint8)
+        c_sub, _ = cv2.findContours(sub_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for cs in c_sub:
+            if cv2.contourArea(cs) > 35:
+                sub_contours.append(cs + [x_off, y_off])
+                
+    return sub_contours if len(sub_contours) > 1 else [cnts[0] + [x_off, y_off]]
+
+
 def detect_items_non_ai(
     image_input,
     target_dim=1600,
-    diff_thresh=22,
-    min_area=80,
-    max_area_ratio=0.85,
     overlay_alpha=0.45,
-    fill_holes=True
+    min_area=45
 ):
     """
-    Detect, count, and overlay masks on items (screws, bolts) in an image using
-    non-AI traditional computer vision techniques.
+    Detect, count, classify (Screw vs Bolt), and overlay masks using OpenCV.
 
     Pipeline Steps:
-    1. Scaling & Preprocessing: Adaptive resizing for uniform kernel scale across resolutions.
-    2. Illumination Correction: Large morphological dilation models non-uniform background lighting.
-    3. Differential Thresholding: Subtract original from estimated background to eliminate shadows/gradients.
-    4. Hole Filling & Specular Repair: Morphological closing & flood-fill repair shiny metal highlights.
-    5. Noise Filtering: Morphological opening removes dust specks and tiny artifacts.
-    6. Contour Extraction & Filtering: Extract contours and filter by scale-adjusted area.
-    7. Touching Object Separation: Inspect large contours exceeding normal area distribution to identify merged items.
-    8. Mask & Annotation Overlay: Render semi-transparent colored masks, contours, bounding boxes, and IDs.
-
-    Args:
-        image_input: File path (str) or BGR image (np.ndarray).
-        target_dim: Maximum dimension for processing scale (default: 1600).
-        diff_thresh: Intensity difference threshold between background and foreground (default: 22).
-        min_area: Minimum contour area threshold at target scale (default: 80).
-        max_area_ratio: Maximum area ratio to prevent detecting full image borders (default: 0.85).
-        overlay_alpha: Opacity factor for mask overlay [0.0 - 1.0] (default: 0.45).
-        fill_holes: Whether to fill interior specular highlight holes (default: True).
+    1. Scale Normalization: Consistent resolution (target_dim 1600 px).
+    2. Illumination Modeling: Morphological background subtraction removes lighting gradients.
+    3. Differential Thresholding: Separates metallic objects from surface.
+    4. Contour-Level Solidification: Fills specular highlight holes inside each object.
+    5. Cluster Decomposition: Resolves dense clusters of touching bolts into individual items.
+    6. Dual-Class Classification: Classifies each item as 'Bolt' (thick/heavy) vs 'Screw' (thin/elongated).
+    7. Color-Coded Overlay: Vibrant Orange for Bolts, Bright Green for Screws.
 
     Returns:
         dict containing:
             - 'count': Total item count
-            - 'items': List of item metadata (id, bbox, centroid, area)
-            - 'overlay_image': Original image with translucent masks, boxes, and labels
-            - 'binary_mask': Binary segmentation mask (255=item, 0=background)
-            - 'original_image': The original unmodified image
+            - 'bolt_count': Number of bolts detected
+            - 'screw_count': Number of screws detected
+            - 'items': List of item metadata (id, category, bbox, centroid, area)
+            - 'annotated_image': Visual overlay with labels and summary banner
+            - 'overlay_image': Overlay without banner
+            - 'binary_mask': Composite binary mask
+            - 'original_image': Input image
     """
     if isinstance(image_input, str):
         if not os.path.isfile(image_input):
@@ -64,7 +108,7 @@ def detect_items_non_ai(
 
     orig_h, orig_w = img.shape[:2]
 
-    # Step 1: Scale normalization for consistent structuring element response
+    # Step 1: Scale normalization
     scale = target_dim / max(orig_h, orig_w) if max(orig_h, orig_w) > target_dim else 1.0
     if scale != 1.0:
         proc_w = int(orig_w * scale)
@@ -74,167 +118,135 @@ def detect_items_non_ai(
         proc_img = img.copy()
         proc_w, proc_h = orig_w, orig_h
 
-    # Step 2: Grayscale & Gaussian Blurring
+    # Step 2: Grayscale & Gaussian blur
     gray = cv2.cvtColor(proc_img, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
-    # Step 3: Morphological Illumination Estimation & Differential Subtraction
-    # A large elliptical structuring element covers across screws to capture background gradient
-    k_size = int(round(45 * min(proc_w, proc_h) / 1080.0))
-    k_size = max(25, k_size | 1)  # ensure odd and at least 25
+    # Step 3: Background illumination estimation
+    k_size = int(round(51 * min(proc_w, proc_h) / 1080.0))
+    k_size = max(31, k_size | 1)
     kernel_bg = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k_size, k_size))
-    
-    # Check background polarity (light background vs dark background)
-    border_pixels = np.concatenate([gray[0, :], gray[-1, :], gray[:, 0], gray[:, -1]])
-    bg_median = float(np.median(border_pixels))
-    
-    if bg_median > 100:
-        # Light surface with darker metallic screws/bolts
-        bg_model = cv2.morphologyEx(blurred, cv2.MORPH_DILATE, kernel_bg)
-        diff = cv2.subtract(bg_model, blurred)
-    else:
-        # Dark surface with lighter objects
-        bg_model = cv2.morphologyEx(blurred, cv2.MORPH_ERODE, kernel_bg)
-        diff = cv2.subtract(blurred, bg_model)
+    bg_model = cv2.morphologyEx(blurred, cv2.MORPH_DILATE, kernel_bg)
+    diff = cv2.subtract(bg_model, blurred)
 
     # Step 4: Differential Thresholding
-    _, thresh = cv2.threshold(diff, diff_thresh, 255, cv2.THRESH_BINARY)
+    _, thresh = cv2.threshold(diff, 20, 255, cv2.THRESH_BINARY)
+    closed = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
 
-    # Step 5: Specular Highlight Repair & Hole Filling
-    # Metallic screws reflect bright light at center, which would otherwise create holes
-    if fill_holes:
-        k_close = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
-        closed = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, k_close, iterations=2)
-        
-        # Flood-fill holes to ensure 100% solid object masks
-        h_pad, w_pad = closed.shape
-        im_floodfill = closed.copy()
-        mask_ff = np.zeros((h_pad + 2, w_pad + 2), np.uint8)
-        cv2.floodFill(im_floodfill, mask_ff, (0, 0), 255)
-        im_floodfill_inv = cv2.bitwise_not(im_floodfill)
-        solid_mask = closed | im_floodfill_inv
-    else:
-        solid_mask = thresh
+    # Step 5: Contour-level hole filling (NO global floodfill to prevent cluster bridging)
+    raw_cnts, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    solid_mask = np.zeros_like(closed)
+    for c in raw_cnts:
+        if cv2.contourArea(c) > 30:
+            cv2.drawContours(solid_mask, [c], -1, 255, thickness=cv2.FILLED)
 
-    # Step 6: Noise Removal (remove isolated dust specks)
-    k_open = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-    clean_mask = cv2.morphologyEx(solid_mask, cv2.MORPH_OPEN, k_open)
+    cleaned = cv2.morphologyEx(solid_mask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+    pre_cnts, _ = cv2.findContours(cleaned, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Step 7: Contour Extraction & Scale-aware Filtering
-    raw_contours, _ = cv2.findContours(clean_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    
-    # Scale adjusted min/max area
-    effective_min_area = min_area * (scale ** 2) if scale < 1.0 else min_area
-    max_area = (proc_w * proc_h) * max_area_ratio
+    # Estimate median single-item area
+    valid_areas = [cv2.contourArea(c) for c in pre_cnts if 100 < cv2.contourArea(c) < 5000]
+    median_a = float(np.median(valid_areas)) if valid_areas else 1200.0
 
-    valid_contours = []
-    contour_areas = []
-    for c in raw_contours:
+    # Step 6: Cluster decomposition for touching bolt/screw clusters
+    all_contours = []
+    for c in pre_cnts:
         area = cv2.contourArea(c)
-        if effective_min_area <= area <= max_area:
-            valid_contours.append(c)
-            contour_areas.append(area)
+        if area < min_area:
+            continue
+        if area > median_a * 2.2:
+            # Touching cluster: decompose
+            x, y, w, h = cv2.boundingRect(c)
+            roi = np.zeros((h, w), dtype=np.uint8)
+            cv2.drawContours(roi, [c - [x, y]], -1, 255, thickness=cv2.FILLED)
+            subs = segment_dense_cluster(roi, (x, y), scale=scale)
+            all_contours.extend(subs)
+        else:
+            all_contours.append(c)
 
-    # Step 8: Multi-object / Cluster Decomposition for touching screws/bolts
-    # If any contour has an area significantly larger than the median item area,
-    # it likely represents touching items. We can estimate sub-items via area ratio or distance peaks.
-    processed_contours = []
-    final_items = []
-    
-    if len(contour_areas) > 3:
-        median_area = float(np.median(contour_areas))
-    else:
-        median_area = float(np.mean(contour_areas)) if contour_areas else 1000.0
-
-    color_palette = [
-        (0, 255, 0),     # Bright Green
-        (255, 0, 0),     # Blue
-        (0, 165, 255),   # Orange
-        (255, 255, 0),   # Cyan
-        (0, 255, 255),   # Yellow
-        (255, 0, 255),   # Magenta
-        (128, 0, 255),   # Purple
-        (0, 215, 255),   # Gold
-        (50, 205, 50),   # Lime
-        (255, 144, 30)   # Dodger Blue
-    ]
-
-    # Create composite binary mask at original image resolution
+    # Step 7: Classification & Visualization Overlay
     orig_binary_mask = np.zeros((orig_h, orig_w), dtype=np.uint8)
-    
-    # Scale contours back to original resolution if scale != 1.0
-    item_counter = 0
     overlay = img.copy()
     mask_layer = np.zeros_like(img)
 
-    for idx, cnt in enumerate(valid_contours):
+    COLOR_SCREW = (0, 255, 0)     # Bright Green
+    COLOR_BOLT  = (0, 165, 255)   # Vibrant Orange / Gold
+
+    items = []
+    bolt_idx = 0
+    screw_idx = 0
+    total_idx = 0
+
+    scale_factor = max(orig_h, orig_w) / 1080.0
+
+    for cnt in all_contours:
         area = cv2.contourArea(cnt)
-        
-        # Project contour coordinates to original image coordinates
+        if area < min_area:
+            continue
+
+        rect = cv2.minAreaRect(cnt)
+        thickness = min(rect[1]) / scale
+        norm_area = area / (scale ** 2)
+
+        category = classify_fastener(norm_area, thickness)
+
         if scale != 1.0:
             cnt_orig = (cnt.astype(np.float32) / scale).astype(np.int32)
         else:
             cnt_orig = cnt
 
-        # Estimate how many items might be merged (if area > 1.95x median)
-        items_in_cnt = max(1, int(round(area / median_area))) if median_area > 0 and (area / median_area) >= 1.95 else 1
-        
-        # Draw on binary mask
-        cv2.drawContours(orig_binary_mask, [cnt_orig], -1, 255, thickness=cv2.FILLED)
-        
-        # Color for visualization
-        color = color_palette[item_counter % len(color_palette)]
-        cv2.drawContours(mask_layer, [cnt_orig], -1, color, thickness=cv2.FILLED)
-        cv2.drawContours(overlay, [cnt_orig], -1, color, thickness=max(2, int(round(2 / scale))))
+        total_idx += 1
+        if category == "Bolt":
+            bolt_idx += 1
+            color = COLOR_BOLT
+            label = f"Bolt #{bolt_idx}"
+        else:
+            screw_idx += 1
+            color = COLOR_SCREW
+            label = f"Screw #{screw_idx}"
 
-        # Bounding box & centroid
+        cv2.drawContours(orig_binary_mask, [cnt_orig], -1, 255, thickness=cv2.FILLED)
+        cv2.drawContours(mask_layer, [cnt_orig], -1, color, thickness=cv2.FILLED)
+        cv2.drawContours(overlay, [cnt_orig], -1, color, thickness=max(2, int(round(2 * scale_factor))))
+
         x, y, w, h = cv2.boundingRect(cnt_orig)
         M = cv2.moments(cnt_orig)
-        if M["m00"] != 0:
-            cx = int(M["m10"] / M["m00"])
-            cy = int(M["m01"] / M["m00"])
-        else:
-            cx = x + w // 2
-            cy = y + h // 2
+        cx = int(M["m10"] / M["m00"]) if M["m00"] != 0 else x + w // 2
+        cy = int(M["m01"] / M["m00"]) if M["m00"] != 0 else y + h // 2
 
-        # Draw bounding box
-        cv2.rectangle(overlay, (x, y), (x + w, y + h), (200, 200, 200), 1)
+        cv2.rectangle(overlay, (x, y), (x + w, y + h), (220, 220, 220), 1)
+        cv2.circle(overlay, (cx, cy), max(3, int(round(3.5 * scale_factor))), (0, 0, 255), -1)
 
-        # Draw ID and centroid point
-        cv2.circle(overlay, (cx, cy), max(3, int(round(4 / scale))), (0, 0, 255), -1)
-        
-        item_counter += 1
-        label = f"#{item_counter}"
-        font_scale = max(0.4, 0.6 / scale)
-        thickness = max(1, int(round(1.5 / scale)))
-        cv2.putText(overlay, label, (x, max(15, y - 5)), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 255, 255), thickness, cv2.LINE_AA)
+        font_scale = max(0.35, 0.5 * scale_factor)
+        thickness_txt = max(1, int(round(1.5 * scale_factor)))
+        cv2.putText(overlay, label, (x, max(18, y - 5)),
+                    cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, thickness_txt, cv2.LINE_AA)
 
-        final_items.append({
-            "id": item_counter,
+        items.append({
+            "id": total_idx,
+            "category": category,
             "bbox": [int(x), int(y), int(w), int(h)],
             "centroid": (int(cx), int(cy)),
-            "area": float(area / (scale ** 2)),
-            "cluster_count": items_in_cnt
+            "area": float(norm_area)
         })
 
-    # Blend colored mask layer with image
     cv2.addWeighted(mask_layer, overlay_alpha, overlay, 1.0 - overlay_alpha, 0, overlay)
 
-    # Add descriptive top banner
-    banner_height = max(50, int(round(60 / scale)))
+    banner_height = max(55, int(round(65 * scale_factor)))
     banner = np.zeros((banner_height, orig_w, 3), dtype=np.uint8)
-    banner[:] = (30, 30, 30)  # Dark slate gray
-    
-    header_text = f"Non-AI Count: {len(final_items)} items  |  Algorithm: Morphological Illumination Model + Diff Threshold"
-    font_scale_hdr = max(0.6, 0.85 / scale)
-    cv2.putText(banner, header_text, (20, int(banner_height * 0.65)), cv2.FONT_HERSHEY_SIMPLEX, 
-                font_scale_hdr, (0, 255, 0), max(1, int(round(2 / scale))), cv2.LINE_AA)
-    
+    banner[:] = (25, 25, 25)
+
+    header_text = f"Non-AI Count: {total_idx} Total  |  Bolts: {bolt_idx} (Orange)  |  Screws: {screw_idx} (Green)"
+    font_scale_hdr = max(0.55, 0.75 * scale_factor)
+    cv2.putText(banner, header_text, (20, int(banner_height * 0.65)),
+                cv2.FONT_HERSHEY_SIMPLEX, font_scale_hdr, (0, 255, 255), max(1, int(round(2 * scale_factor))), cv2.LINE_AA)
+
     final_annotated = np.vstack([banner, overlay])
 
     return {
-        "count": len(final_items),
-        "items": final_items,
+        "count": total_idx,
+        "bolt_count": bolt_idx,
+        "screw_count": screw_idx,
+        "items": items,
         "annotated_image": final_annotated,
         "overlay_image": overlay,
         "binary_mask": orig_binary_mask,
@@ -242,10 +254,7 @@ def detect_items_non_ai(
     }
 
 
-def evaluate_dataset(dataset_dir, output_dir=None, diff_thresh=22, min_area=80):
-    """
-    Run detection over all images in a dataset directory, print results, and save outputs.
-    """
+def evaluate_dataset(dataset_dir, output_dir=None):
     valid_exts = ("*.jpg", "*.jpeg", "*.png", "*.bmp")
     image_paths = []
     for ext in valid_exts:
@@ -260,46 +269,50 @@ def evaluate_dataset(dataset_dir, output_dir=None, diff_thresh=22, min_area=80):
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
 
-    print(f"\n{'='*70}")
-    print(f"EVALUATING DATASET: {os.path.basename(dataset_dir)} ({len(image_paths)} images)")
-    print(f"{'='*70}")
-    print(f"{'Filename':<35} | {'Detected Count':<16} | {'Status':<10}")
-    print(f"{'-'*70}")
+    print(f"\n{'='*75}")
+    print(f"NON-AI EVALUATION: {os.path.basename(dataset_dir)} ({len(image_paths)} images)")
+    print(f"{'='*75}")
+    print(f"{'Filename':<30} | {'Total Count':<12} | {'Bolts':<8} | {'Screws':<8} | {'Status':<8}")
+    print(f"{'-'*75}")
 
     results = []
     for img_p in image_paths:
         fname = os.path.basename(img_p)
-        res = detect_items_non_ai(img_p, diff_thresh=diff_thresh, min_area=min_area)
-        count = res["count"]
-        results.append({"filename": fname, "count": count, "path": img_p})
-        print(f"{fname:<35} | {count:<16} | {'OK':<10}")
+        res = detect_items_non_ai(img_p)
+        results.append({
+            "filename": fname,
+            "count": res["count"],
+            "bolt_count": res["bolt_count"],
+            "screw_count": res["screw_count"]
+        })
+        print(f"{fname:<30} | {res['count']:<12} | {res['bolt_count']:<8} | {res['screw_count']:<8} | {'OK':<8}")
 
         if output_dir:
-            out_img_name = f"detected_{os.path.splitext(fname)[0]}.jpg"
-            out_mask_name = f"mask_{os.path.splitext(fname)[0]}.png"
-            cv2.imwrite(os.path.join(output_dir, out_img_name), res["annotated_image"])
-            cv2.imwrite(os.path.join(output_dir, out_mask_name), res["binary_mask"])
+            out_img = os.path.join(output_dir, f"detected_{os.path.splitext(fname)[0]}.jpg")
+            out_mask = os.path.join(output_dir, f"mask_{os.path.splitext(fname)[0]}.png")
+            cv2.imwrite(out_img, res["annotated_image"])
+            cv2.imwrite(out_mask, res["binary_mask"])
 
-    print(f"{'-'*70}")
+    print(f"{'-'*75}")
     counts = [r["count"] for r in results]
-    print(f"Total Images: {len(results)} | Mean Count: {np.mean(counts):.1f} | Min: {min(counts)} | Max: {max(counts)}")
-    print(f"{'='*70}\n")
+    bolts = [r["bolt_count"] for r in results]
+    screws = [r["screw_count"] for r in results]
+    print(f"Summary: Images={len(results)} | Mean Total={np.mean(counts):.1f} | Mean Bolts={np.mean(bolts):.1f} | Mean Screws={np.mean(screws):.1f}")
+    print(f"{'='*75}\n")
     return results
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Non-AI Item Counting and Mask Overlay using OpenCV")
+    parser = argparse.ArgumentParser(description="Non-AI Screws & Bolts Counting and Mask Overlay using OpenCV")
     parser.add_argument("--input", type=str, default="data/Screws", help="Path to image file or directory")
     parser.add_argument("--output_dir", type=str, default="Athira_PT/Non_AI/output", help="Directory to save output visualizations")
-    parser.add_argument("--diff_thresh", type=int, default=22, help="Difference threshold for background subtraction")
-    parser.add_argument("--min_area", type=int, default=80, help="Minimum contour area to filter noise")
     args = parser.parse_args()
 
     if os.path.isdir(args.input):
-        evaluate_dataset(args.input, output_dir=args.output_dir, diff_thresh=args.diff_thresh, min_area=args.min_area)
+        evaluate_dataset(args.input, output_dir=args.output_dir)
     elif os.path.isfile(args.input):
-        res = detect_items_non_ai(args.input, diff_thresh=args.diff_thresh, min_area=args.min_area)
-        print(f"\nProcessed {args.input}: Detected {res['count']} items.")
+        res = detect_items_non_ai(args.input)
+        print(f"\nProcessed {args.input}: Total={res['count']}, Bolts={res['bolt_count']}, Screws={res['screw_count']}")
         if args.output_dir:
             os.makedirs(args.output_dir, exist_ok=True)
             fname = os.path.basename(args.input)
