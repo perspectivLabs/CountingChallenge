@@ -1,0 +1,227 @@
+{
+  "ScrewAndBolt_20240713/20240713_192951.jpg": {
+    "true": 21,
+    "pred": 21,
+    "count_acc": 1.0,
+    "matched": 21,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "ScrewAndBolt_20240713/20240713_193135.jpg": {
+    "true": 21,
+    "pred": 21,
+    "count_acc": 1.0,
+    "matched": 21,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "ScrewAndBolt_20240713/20240713_193650.jpg": {
+    "true": 10,
+    "pred": 10,
+    "count_acc": 1.0,
+    "matched": 10,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "ScrewAndBolt_20240713/20240713_193659.jpg": {
+    "true": 10,
+    "pred": 10,
+    "count_acc": 1.0,
+    "matched": 10,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "ScrewAndBolt_20240713/20240713_193831.jpg": {
+    "true": 193,
+    "pred": 197,
+    "count_acc": 0.9792746113989638,
+    "matched": 191,
+    "merged": 2,
+    "missed": 0,
+    "false_pos": 6
+  },
+  "ScrewAndBolt_20240713/20240713_193839.jpg": {
+    "true": 196,
+    "pred": 197,
+    "count_acc": 0.9948979591836735,
+    "matched": 195,
+    "merged": 1,
+    "missed": 0,
+    "false_pos": 2
+  },
+  "ScrewAndBolt_20240713/20240713_193907.jpg": {
+    "true": 194,
+    "pred": 198,
+    "count_acc": 0.979381443298969,
+    "matched": 191,
+    "merged": 3,
+    "missed": 0,
+    "false_pos": 7
+  },
+  "ScrewAndBolt_20240713/20240713_194200.jpg": {
+    "true": 98,
+    "pred": 100,
+    "count_acc": 0.9795918367346939,
+    "matched": 97,
+    "merged": 1,
+    "missed": 0,
+    "false_pos": 3
+  },
+  "ScrewAndBolt_20240713/20240713_194206.jpg": {
+    "true": 100,
+    "pred": 100,
+    "count_acc": 1.0,
+    "matched": 99,
+    "merged": 1,
+    "missed": 0,
+    "false_pos": 1
+  },
+  "ScrewAndBolt_20240713/20240713_194215.jpg": {
+    "true": 98,
+    "pred": 98,
+    "count_acc": 1.0,
+    "matched": 96,
+    "merged": 2,
+    "missed": 0,
+    "false_pos": 2
+  },
+  "ScrewAndBolt_20240713/20240713_194232.jpg": {
+    "true": 99,
+    "pred": 100,
+    "count_acc": 0.98989898989899,
+    "matched": 99,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 1
+  },
+  "ScrewAndBolt_20240713/20240713_194256.jpg": {
+    "true": 98,
+    "pred": 99,
+    "count_acc": 0.9897959183673469,
+    "matched": 97,
+    "merged": 1,
+    "missed": 0,
+    "false_pos": 2
+  },
+  "ScrewAndBolt_20240713/20240713_194316.jpg": {
+    "true": 98,
+    "pred": 97,
+    "count_acc": 0.9897959183673469,
+    "matched": 96,
+    "merged": 2,
+    "missed": 0,
+    "false_pos": 1
+  },
+  "ScrewAndBolt_20240713/20240713_194541.jpg": {
+    "true": 354,
+    "pred": 354,
+    "count_acc": 1.0,
+    "matched": 354,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "ScrewAndBolt_20240713/20240713_194551.jpg": {
+    "true": 354,
+    "pred": 354,
+    "count_acc": 1.0,
+    "matched": 354,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "ScrewAndBolt_20240713/20240713_194606.jpg": {
+    "true": 354,
+    "pred": 353,
+    "count_acc": 0.9971751412429378,
+    "matched": 353,
+    "merged": 1,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "ScrewAndBolt_20240713/20240713_194621.jpg": {
+    "true": 354,
+    "pred": 354,
+    "count_acc": 1.0,
+    "matched": 354,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "ScrewAndBolt_20240713/20240713_194630.jpg": {
+    "true": 354,
+    "pred": 354,
+    "count_acc": 1.0,
+    "matched": 354,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "Screws_2024_07_15/img1.jpg": {
+    "true": 43,
+    "pred": 43,
+    "count_acc": 1.0,
+    "matched": 43,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "Screws_2024_07_15/img1_43_nosy.jpg": {
+    "true": 43,
+    "pred": 43,
+    "count_acc": 1.0,
+    "matched": 43,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "Screws_2024_07_15/img2.jpg": {
+    "true": 43,
+    "pred": 43,
+    "count_acc": 1.0,
+    "matched": 43,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "Screws_2024_07_15/img3.jpg": {
+    "true": 43,
+    "pred": 43,
+    "count_acc": 1.0,
+    "matched": 43,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "Screws_2024_07_15/img4.jpg": {
+    "true": 43,
+    "pred": 43,
+    "count_acc": 1.0,
+    "matched": 43,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "Screws_2024_07_15/img5.jpg": {
+    "true": 43,
+    "pred": 43,
+    "count_acc": 1.0,
+    "matched": 43,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  },
+  "Screws_2024_07_15/img6.jpg": {
+    "true": 43,
+    "pred": 43,
+    "count_acc": 1.0,
+    "matched": 43,
+    "merged": 0,
+    "missed": 0,
+    "false_pos": 0
+  }
+}

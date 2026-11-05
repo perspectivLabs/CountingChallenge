@@ -1,0 +1,16 @@
+[project]
+name = "ground-truth"
+version = "0.1.0"
+description = "Ground truth for the counting dataset: Non-AI and SAM 2 cross-check plus visual review."
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.5.4",
+    "opencv-python>=5.0.0.93",
+    "scipy>=1.18.1",
+    "ultralytics>=8.4.202",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.3",
+]

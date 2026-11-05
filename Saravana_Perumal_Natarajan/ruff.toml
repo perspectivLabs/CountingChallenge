@@ -1,0 +1,14 @@
+# Shared lint/format settings for Non_AI/, AI/ and GroundTruth/.
+line-length = 110
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "N", "D"]
+ignore = [
+    "D105", "D107",  # magic methods / __init__ need no docstring
+    "D203", "D213",  # use D211 + D212 (summary on the first line)
+    "D413",          # no blank line needed after the last docstring section
+]
+
+[lint.isort]
+known-first-party = ["count", "evaluate", "compare", "sam_count", "make_dataset", "splits"]
