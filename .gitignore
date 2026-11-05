@@ -189,4 +189,6 @@ weights/
 # ...except the trained AI model, which is part of the submission (6 MB).
 !Saravana_Perumal_Natarajan/AI/model/*.pt
 
+# Tool caches
+.ruff_cache/
 .DS_Store
