@@ -1,0 +1,11 @@
+# Complete requirements for CountingChallenge (Non-AI + AI)
+torch>=2.0.0
+torchvision>=0.15.0
+ultralytics>=8.2.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+scipy>=1.10.0
+Pillow>=9.5.0
+jupyter>=1.0.0
+ipykernel>=6.20.0
