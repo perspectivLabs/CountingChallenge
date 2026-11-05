@@ -1,0 +1,724 @@
+{
+ "ScrewAndBolt_20240713/20240713_192951.jpg": {
+  "confidence": "high",
+  "agreed": 21,
+  "candidates": 0,
+  "accepted": []
+ },
+ "ScrewAndBolt_20240713/20240713_193135.jpg": {
+  "confidence": "high",
+  "agreed": 21,
+  "candidates": 0,
+  "accepted": []
+ },
+ "ScrewAndBolt_20240713/20240713_193650.jpg": {
+  "confidence": "high",
+  "agreed": 10,
+  "candidates": 0,
+  "accepted": []
+ },
+ "ScrewAndBolt_20240713/20240713_193659.jpg": {
+  "confidence": "high",
+  "agreed": 10,
+  "candidates": 0,
+  "accepted": []
+ },
+ "ScrewAndBolt_20240713/20240713_193831.jpg": {
+  "confidence": "medium",
+  "agreed": 185,
+  "candidates": 20,
+  "accepted": [
+   {
+    "id": "C0",
+    "members": [
+     "N36"
+    ],
+    "point": [
+     552.0,
+     690.0
+    ]
+   },
+   {
+    "id": "C3",
+    "members": [
+     "N60"
+    ],
+    "point": [
+     971.0,
+     797.0
+    ]
+   },
+   {
+    "id": "C5",
+    "members": [
+     "N102"
+    ],
+    "point": [
+     718.0,
+     1014.0
+    ]
+   },
+   {
+    "id": "C6",
+    "members": [
+     "N135"
+    ],
+    "point": [
+     971.0,
+     1134.0
+    ]
+   },
+   {
+    "id": "C9",
+    "members": [
+     "N52",
+     "S56"
+    ],
+    "point": [
+     798.0,
+     906.0
+    ]
+   },
+   {
+    "id": "C10",
+    "members": [
+     "N94",
+     "S64"
+    ],
+    "point": [
+     769.0,
+     1123.0
+    ]
+   },
+   {
+    "id": "C11",
+    "members": [
+     "N37",
+     "S75"
+    ],
+    "point": [
+     685.0,
+     915.0
+    ]
+   },
+   {
+    "id": "C15",
+    "members": [
+     "S173"
+    ],
+    "point": [
+     1063.0,
+     1257.0
+    ]
+   }
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_193839.jpg": {
+  "confidence": "medium",
+  "agreed": 184,
+  "candidates": 22,
+  "accepted": [
+   {
+    "id": "C1",
+    "members": [
+     "N29"
+    ],
+    "point": [
+     638.0,
+     1002.0
+    ]
+   },
+   {
+    "id": "C2",
+    "members": [
+     "N34"
+    ],
+    "point": [
+     626.0,
+     1101.0
+    ]
+   },
+   {
+    "id": "C4",
+    "members": [
+     "N56"
+    ],
+    "point": [
+     877.0,
+     974.0
+    ]
+   },
+   {
+    "id": "C5",
+    "members": [
+     "N63"
+    ],
+    "point": [
+     888.0,
+     929.0
+    ]
+   },
+   {
+    "id": "C6",
+    "members": [
+     "N79"
+    ],
+    "point": [
+     302.0,
+     1052.0
+    ]
+   },
+   {
+    "id": "C7",
+    "members": [
+     "N92"
+    ],
+    "point": [
+     478.0,
+     1141.0
+    ]
+   },
+   {
+    "id": "C8",
+    "members": [
+     "N117"
+    ],
+    "point": [
+     915.0,
+     1215.0
+    ]
+   },
+   {
+    "id": "C9",
+    "members": [
+     "N119"
+    ],
+    "point": [
+     922.0,
+     1175.0
+    ]
+   },
+   {
+    "id": "C13",
+    "members": [
+     "N91",
+     "S74"
+    ],
+    "point": [
+     463.0,
+     1094.0
+    ]
+   },
+   {
+    "id": "C14",
+    "members": [
+     "N53",
+     "S99"
+    ],
+    "point": [
+     824.0,
+     1017.0
+    ]
+   },
+   {
+    "id": "C15",
+    "members": [
+     "N190",
+     "S140"
+    ],
+    "point": [
+     299.0,
+     1397.0
+    ]
+   },
+   {
+    "id": "C16",
+    "members": [
+     "N158",
+     "N162",
+     "S141"
+    ],
+    "point": [
+     247.0,
+     1305.0
+    ]
+   }
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_193907.jpg": {
+  "confidence": "medium",
+  "agreed": 184,
+  "candidates": 17,
+  "accepted": [
+   {
+    "id": "C5",
+    "members": [
+     "N92"
+    ],
+    "point": [
+     582.0,
+     1017.0
+    ]
+   },
+   {
+    "id": "C11",
+    "members": [
+     "N56",
+     "S20"
+    ],
+    "point": [
+     803.0,
+     824.0
+    ]
+   },
+   {
+    "id": "C14",
+    "members": [
+     "N120",
+     "S132"
+    ],
+    "point": [
+     969.0,
+     1103.0
+    ]
+   },
+   {
+    "id": "C15",
+    "members": [
+     "N150",
+     "S148"
+    ],
+    "point": [
+     824.0,
+     1342.0
+    ]
+   }
+  ],
+  "added": [
+   [
+    894.0,
+    546.0
+   ],
+   [
+    755.0,
+    824.0
+   ],
+   [
+    812.0,
+    792.0
+   ],
+   [
+    718.0,
+    1139.0
+   ],
+   [
+    1019.0,
+    1271.0
+   ],
+   [
+    889.0,
+    534.0
+   ]
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194200.jpg": {
+  "confidence": "medium",
+  "agreed": 95,
+  "candidates": 14,
+  "accepted": [
+   {
+    "id": "C0",
+    "members": [
+     "N12"
+    ],
+    "point": [
+     853.0,
+     977.0
+    ]
+   },
+   {
+    "id": "C3",
+    "members": [
+     "N69"
+    ],
+    "point": [
+     1356.0,
+     1203.0
+    ]
+   },
+   {
+    "id": "C12",
+    "members": [
+     "N82",
+     "N79",
+     "S97",
+     "S102"
+    ],
+    "point": [
+     924.0,
+     1333.0
+    ]
+   }
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194206.jpg": {
+  "confidence": "medium",
+  "agreed": 98,
+  "candidates": 13,
+  "accepted": [
+   {
+    "id": "C1",
+    "members": [
+     "N31"
+    ],
+    "point": [
+     727.0,
+     958.0
+    ]
+   },
+   {
+    "id": "C2",
+    "members": [
+     "N34"
+    ],
+    "point": [
+     739.0,
+     933.0
+    ]
+   }
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194215.jpg": {
+  "confidence": "medium",
+  "agreed": 96,
+  "candidates": 10,
+  "accepted": [
+   {
+    "id": "C4",
+    "members": [
+     "N46",
+     "S41"
+    ],
+    "point": [
+     672.0,
+     1046.0
+    ]
+   },
+   {
+    "id": "C9",
+    "members": [
+     "N90",
+     "S95"
+    ],
+    "point": [
+     811.0,
+     1371.0
+    ]
+   }
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194232.jpg": {
+  "confidence": "medium",
+  "agreed": 101,
+  "candidates": 5,
+  "accepted": [],
+  "removed": [
+   [
+    678.0,
+    775.0
+   ],
+   [
+    522.0,
+    1213.0
+   ]
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194256.jpg": {
+  "confidence": "medium",
+  "agreed": 93,
+  "candidates": 19,
+  "accepted": [
+   {
+    "id": "C0",
+    "members": [
+     "N16"
+    ],
+    "point": [
+     855.0,
+     826.0
+    ]
+   },
+   {
+    "id": "C4",
+    "members": [
+     "N45"
+    ],
+    "point": [
+     875.0,
+     931.0
+    ]
+   },
+   {
+    "id": "C6",
+    "members": [
+     "N74"
+    ],
+    "point": [
+     914.0,
+     1187.0
+    ]
+   }
+  ],
+  "added": [
+   [
+    1353.0,
+    1118.0
+   ],
+   [
+    723.0,
+    998.0
+   ]
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194316.jpg": {
+  "confidence": "medium",
+  "agreed": 90,
+  "candidates": 13,
+  "accepted": [
+   {
+    "id": "C0",
+    "members": [
+     "N25"
+    ],
+    "point": [
+     1180.0,
+     817.0
+    ]
+   },
+   {
+    "id": "C2",
+    "members": [
+     "N33"
+    ],
+    "point": [
+     1027.0,
+     933.0
+    ]
+   },
+   {
+    "id": "C3",
+    "members": [
+     "N34"
+    ],
+    "point": [
+     1014.0,
+     917.0
+    ]
+   },
+   {
+    "id": "C4",
+    "members": [
+     "N49"
+    ],
+    "point": [
+     942.0,
+     987.0
+    ]
+   },
+   {
+    "id": "C5",
+    "members": [
+     "N60"
+    ],
+    "point": [
+     1252.0,
+     1131.0
+    ]
+   },
+   {
+    "id": "C6",
+    "members": [
+     "N71"
+    ],
+    "point": [
+     928.0,
+     1246.0
+    ]
+   },
+   {
+    "id": "C11",
+    "members": [
+     "N45",
+     "S41"
+    ],
+    "point": [
+     665.0,
+     994.0
+    ]
+   }
+  ],
+  "added": [
+   [
+    1200.0,
+    818.0
+   ]
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194541.jpg": {
+  "confidence": "high",
+  "agreed": 353,
+  "candidates": 19,
+  "accepted": [
+   {
+    "id": "C10",
+    "members": [
+     "N257"
+    ],
+    "point": [
+     1218.0,
+     886.0
+    ]
+   }
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194551.jpg": {
+  "confidence": "high",
+  "agreed": 351,
+  "candidates": 24,
+  "accepted": [
+   {
+    "id": "C4",
+    "members": [
+     "N68"
+    ],
+    "point": [
+     860.0,
+     1368.0
+    ]
+   },
+   {
+    "id": "C12",
+    "members": [
+     "N192"
+    ],
+    "point": [
+     772.0,
+     1129.0
+    ]
+   },
+   {
+    "id": "C14",
+    "members": [
+     "N205"
+    ],
+    "point": [
+     659.0,
+     1114.0
+    ]
+   }
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194606.jpg": {
+  "confidence": "high",
+  "agreed": 351,
+  "candidates": 18,
+  "accepted": [
+   {
+    "id": "C4",
+    "members": [
+     "N118"
+    ],
+    "point": [
+     1002.0,
+     1267.0
+    ]
+   },
+   {
+    "id": "C5",
+    "members": [
+     "N146"
+    ],
+    "point": [
+     448.0,
+     1029.0
+    ]
+   },
+   {
+    "id": "C17",
+    "members": [
+     "N183",
+     "S145"
+    ],
+    "point": [
+     636.0,
+     1000.0
+    ]
+   }
+  ]
+ },
+ "ScrewAndBolt_20240713/20240713_194621.jpg": {
+  "confidence": "high",
+  "agreed": 354,
+  "candidates": 9,
+  "accepted": []
+ },
+ "ScrewAndBolt_20240713/20240713_194630.jpg": {
+  "confidence": "high",
+  "agreed": 353,
+  "candidates": 5,
+  "accepted": [
+   {
+    "id": "C0",
+    "members": [
+     "N34"
+    ],
+    "point": [
+     737.0,
+     719.0
+    ]
+   }
+  ]
+ },
+ "Screws_2024_07_15/img1.jpg": {
+  "confidence": "high",
+  "agreed": 43,
+  "candidates": 0,
+  "accepted": []
+ },
+ "Screws_2024_07_15/img1_43_nosy.jpg": {
+  "confidence": "high",
+  "agreed": 43,
+  "candidates": 1,
+  "accepted": []
+ },
+ "Screws_2024_07_15/img2.jpg": {
+  "confidence": "high",
+  "agreed": 43,
+  "candidates": 0,
+  "accepted": []
+ },
+ "Screws_2024_07_15/img3.jpg": {
+  "confidence": "high",
+  "agreed": 43,
+  "candidates": 1,
+  "accepted": []
+ },
+ "Screws_2024_07_15/img4.jpg": {
+  "confidence": "high",
+  "agreed": 43,
+  "candidates": 2,
+  "accepted": []
+ },
+ "Screws_2024_07_15/img5.jpg": {
+  "confidence": "high",
+  "agreed": 43,
+  "candidates": 1,
+  "accepted": []
+ },
+ "Screws_2024_07_15/img6.jpg": {
+  "confidence": "high",
+  "agreed": 43,
+  "candidates": 1,
+  "accepted": []
+ }
+}
