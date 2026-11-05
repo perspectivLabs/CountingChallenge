@@ -175,4 +175,3 @@ Athira_PT/AI/output/*
 !Athira_PT/AI/output/sample_*.jpg
 runs/
 *.pt
-!Athira_PT/AI/models/best.pt

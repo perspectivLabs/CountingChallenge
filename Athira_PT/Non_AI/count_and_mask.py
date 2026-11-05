@@ -1,10 +1,8 @@
 """
-Non-AI Item Counting and Mask Overlay Pipeline
+Non-AI Object Counting and Mask Overlay Pipeline
 Author: Athira PT
-Task: Count screws and bolts in images and overlay precise masks using traditional Computer Vision (OpenCV).
-- Screws dataset: Single classification (all items classified as Screws).
-- ScrewAndBolt dataset: 2-class classification (Bolts vs Screws).
-Accuracy Target: > 95%
+Task: Count objects (screws, bolts, fasteners) and overlay precise segmentation masks
+      with > 95% accuracy using classical Computer Vision (OpenCV).
 """
 
 import os
@@ -15,22 +13,6 @@ import cv2
 import numpy as np
 
 
-def classify_fastener(area_norm, thickness_norm, aspect_ratio=1.0, mode="dual"):
-    """
-    Classify a fastener:
-    - If mode == 'single': Always returns 'Screw'.
-    - If mode == 'dual':
-        - 'Bolt': Wide diameter (thickness >= 52px at scale 1600), large area (>= 2800px), or compact aspect ratio (< 3.2).
-        - 'Screw': Slender shaft (aspect ratio >= 3.2, thickness < 52px, area < 2800px).
-    """
-    if mode == "single":
-        return "Screw"
-    if thickness_norm >= 52.0 or area_norm >= 2800.0 or aspect_ratio < 3.2:
-        return "Bolt"
-    else:
-        return "Screw"
-
-
 def segment_dense_cluster(roi_mask, offset_xy, scale=1.0):
     """
     Decomposes a dense cluster of touching fasteners using Distance Transform
@@ -38,16 +20,16 @@ def segment_dense_cluster(roi_mask, offset_xy, scale=1.0):
     """
     x_off, y_off = offset_xy
     dist = cv2.distanceTransform(roi_mask, cv2.DIST_L2, 5)
-    
+
     k_size = 9
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k_size, k_size))
     dilated = cv2.dilate(dist, kernel)
-    
+
     peaks = (dist == dilated) & (dist > max(6.0, 0.22 * dist.max()))
-    
+
     _, markers = cv2.connectedComponents(peaks.astype(np.uint8))
     num_peaks = np.max(markers)
-    
+
     cnts, _ = cv2.findContours(roi_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if num_peaks <= 1:
         return [c + [x_off, y_off] for c in cnts if cv2.contourArea(c) > 30]
@@ -57,9 +39,9 @@ def segment_dense_cluster(roi_mask, offset_xy, scale=1.0):
     unknown = cv2.subtract(sure_bg, (peaks * 255).astype(np.uint8))
     markers = markers + 1
     markers[unknown == 255] = 0
-    
+
     cv2.watershed(roi_bgr, markers)
-    
+
     sub_contours = []
     for mid in range(2, num_peaks + 2):
         sub_mask = (markers == mid).astype(np.uint8)
@@ -67,7 +49,7 @@ def segment_dense_cluster(roi_mask, offset_xy, scale=1.0):
         for cs in c_sub:
             if cv2.contourArea(cs) > 35:
                 sub_contours.append(cs + [x_off, y_off])
-                
+
     return sub_contours if len(sub_contours) > 1 else [cnts[0] + [x_off, y_off]]
 
 
@@ -75,37 +57,28 @@ def detect_items_non_ai(
     image_input,
     target_dim=1600,
     overlay_alpha=0.45,
-    min_area=45,
-    mode="auto"
+    min_area=45
 ):
     """
-    Detect, count, classify, and overlay masks using OpenCV.
+    Detects, segments, and counts objects using classical Computer Vision (OpenCV).
 
-    Classification Modes:
-    - 'auto': Automatically selects 'single' if input is from Screws dataset, or 'dual' if from ScrewAndBolt.
-    - 'single': Single classification (Screws only). All detected items are classified as Screws.
-    - 'dual': 2-class classification (Bolts vs Screws).
+    Pipeline Steps:
+    1. Scale Normalization (target dimension 1600 px).
+    2. Morphological Illumination Modeling (large elliptical dilation background subtraction).
+    3. Differential Thresholding (separates metallic hardware from surface).
+    4. Contour-level Hole Filling (closes specular highlight holes without cluster bridging).
+    5. Cluster Peak Decomposition (resolves dense clusters of touching fasteners).
+    6. Mask & Centroid Visualization (translucent overlay + bounding box + index label).
 
     Returns:
-        dict containing:
-            - 'count': Total item count
-            - 'bolt_count': Number of bolts detected (0 in single mode)
-            - 'screw_count': Number of screws detected
-            - 'mode': Classification mode applied ('single' or 'dual')
-            - 'items': List of item metadata (id, category, bbox, centroid, area)
+        dict:
+            - 'count': Total object count
+            - 'items': List of item metadata (id, bbox, centroid, area)
             - 'annotated_image': Visual overlay with labels and summary banner
-            - 'overlay_image': Overlay without banner
+            - 'overlay_image': Clean overlay without banner
             - 'binary_mask': Composite binary mask
             - 'original_image': Input image
     """
-    input_str = image_input if isinstance(image_input, str) else ""
-    if mode == "auto":
-        norm_str = input_str.replace("\\", "/").lower()
-        if "screws" in norm_str and "screwandbolt" not in norm_str and "screw_and_bolt" not in norm_str:
-            mode = "single"
-        else:
-            mode = "dual"
-
     if isinstance(image_input, str):
         if not os.path.isfile(image_input):
             raise FileNotFoundError(f"Image not found at: {image_input}")
@@ -155,7 +128,7 @@ def detect_items_non_ai(
     valid_areas = [cv2.contourArea(c) for c in pre_cnts if 100 < cv2.contourArea(c) < 5000]
     median_a = float(np.median(valid_areas)) if valid_areas else 1200.0
 
-    # Step 6: Cluster decomposition for touching bolt clusters
+    # Step 6: Cluster decomposition for touching bolt/screw clusters
     all_contours = []
     for c in pre_cnts:
         area = cv2.contourArea(c)
@@ -170,19 +143,22 @@ def detect_items_non_ai(
         else:
             all_contours.append(c)
 
-    # Step 7: Classification & Visualization Overlay
+    # Step 7: Object Count & Visualization Overlay
     orig_binary_mask = np.zeros((orig_h, orig_w), dtype=np.uint8)
     overlay = img.copy()
     mask_layer = np.zeros_like(img)
 
-    COLOR_SCREW = (0, 255, 0)     # Bright Green
-    COLOR_BOLT  = (0, 165, 255)   # Vibrant Orange
+    colors = [
+        (0, 255, 0),    # Bright green
+        (0, 215, 255),  # Gold/yellow
+        (255, 128, 0),  # Sky blue
+        (0, 165, 255),  # Orange
+        (255, 0, 128),  # Purple
+        (50, 205, 50),  # Lime
+    ]
 
     items = []
-    bolt_idx = 0
-    screw_idx = 0
     total_idx = 0
-
     scale_factor = max(orig_h, orig_w) / 1080.0
 
     for cnt in all_contours:
@@ -190,14 +166,7 @@ def detect_items_non_ai(
         if area < min_area:
             continue
 
-        rect = cv2.minAreaRect(cnt)
-        w_box, h_box = rect[1]
-        thickness = min(w_box, h_box) / scale
-        length = max(w_box, h_box) / scale
-        aspect_ratio = length / max(1.0, thickness)
         norm_area = area / (scale ** 2)
-
-        category = classify_fastener(norm_area, thickness, aspect_ratio=aspect_ratio, mode=mode)
 
         if scale != 1.0:
             cnt_orig = (cnt.astype(np.float32) / scale).astype(np.int32)
@@ -205,14 +174,8 @@ def detect_items_non_ai(
             cnt_orig = cnt
 
         total_idx += 1
-        if category == "Bolt":
-            bolt_idx += 1
-            color = COLOR_BOLT
-            label = f"Bolt #{bolt_idx}"
-        else:
-            screw_idx += 1
-            color = COLOR_SCREW
-            label = f"Screw #{screw_idx}"
+        color = colors[(total_idx - 1) % len(colors)]
+        label = f"#{total_idx}"
 
         cv2.drawContours(orig_binary_mask, [cnt_orig], -1, 255, thickness=cv2.FILLED)
         cv2.drawContours(mask_layer, [cnt_orig], -1, color, thickness=cv2.FILLED)
@@ -226,14 +189,13 @@ def detect_items_non_ai(
         cv2.rectangle(overlay, (x, y), (x + w, y + h), (220, 220, 220), 1)
         cv2.circle(overlay, (cx, cy), max(3, int(round(3.5 * scale_factor))), (0, 0, 255), -1)
 
-        font_scale = max(0.35, 0.5 * scale_factor)
+        font_scale = max(0.35, 0.45 * scale_factor)
         thickness_txt = max(1, int(round(1.5 * scale_factor)))
         cv2.putText(overlay, label, (x, max(18, y - 5)),
                     cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, thickness_txt, cv2.LINE_AA)
 
         items.append({
             "id": total_idx,
-            "category": category,
             "bbox": [int(x), int(y), int(w), int(h)],
             "centroid": (int(cx), int(cy)),
             "area": float(norm_area)
@@ -245,11 +207,7 @@ def detect_items_non_ai(
     banner = np.zeros((banner_height, orig_w, 3), dtype=np.uint8)
     banner[:] = (25, 25, 25)
 
-    if mode == "single":
-        header_text = f"Non-AI Count: {total_idx} Screws (Single-Class Detection)"
-    else:
-        header_text = f"Non-AI Count: {total_idx} Total  |  Bolts: {bolt_idx} (Orange)  |  Screws: {screw_idx} (Green)"
-
+    header_text = f"Non-AI Object Count: {total_idx} Objects  |  Method: Morphological Illumination Model + Peak Watershed"
     font_scale_hdr = max(0.55, 0.75 * scale_factor)
     cv2.putText(banner, header_text, (20, int(banner_height * 0.65)),
                 cv2.FONT_HERSHEY_SIMPLEX, font_scale_hdr, (0, 255, 255), max(1, int(round(2 * scale_factor))), cv2.LINE_AA)
@@ -258,9 +216,6 @@ def detect_items_non_ai(
 
     return {
         "count": total_idx,
-        "bolt_count": bolt_idx,
-        "screw_count": screw_idx,
-        "mode": mode,
         "items": items,
         "annotated_image": final_annotated,
         "overlay_image": overlay,
@@ -269,7 +224,8 @@ def detect_items_non_ai(
     }
 
 
-def evaluate_dataset(dataset_dir, output_dir=None, mode="auto"):
+def evaluate_dataset(dataset_dir, output_dir=None):
+    """Evaluates the Non-AI method across an entire directory of images."""
     valid_exts = ("*.jpg", "*.jpeg", "*.png", "*.bmp")
     image_paths = []
     for ext in valid_exts:
@@ -284,38 +240,32 @@ def evaluate_dataset(dataset_dir, output_dir=None, mode="auto"):
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
 
-    norm_dir = dataset_dir.replace("\\", "/").lower()
-    if mode == "auto":
-        current_mode = "single" if ("screws" in norm_dir and "screwandbolt" not in norm_dir) else "dual"
-    else:
-        current_mode = mode
+    is_screws_benchmark = "screws" in dataset_dir.replace("\\", "/").lower() and "screwandbolt" not in dataset_dir.replace("\\", "/").lower()
 
-    print(f"\n{'='*75}")
-    mode_desc = "Single Classification (Screws Only)" if current_mode == "single" else "2-Class Classification (Bolts vs Screws)"
-    print(f"NON-AI EVALUATION: {os.path.basename(dataset_dir)} [{mode_desc}] ({len(image_paths)} images)")
-    print(f"{'='*75}")
-    if current_mode == "single":
-        print(f"{'Filename':<30} | {'Screws Detected':<16} | {'Ground Truth':<14} | {'Accuracy':<10}")
+    print(f"\n{'='*70}")
+    print(f"NON-AI EVALUATION: {os.path.basename(dataset_dir)} ({len(image_paths)} images)")
+    print(f"{'='*70}")
+    if is_screws_benchmark:
+        print(f"{'Filename':<30} | {'Detected Count':<16} | {'Ground Truth':<14} | {'Accuracy':<10}")
     else:
-        print(f"{'Filename':<30} | {'Total Count':<12} | {'Bolts (Orange)':<15} | {'Screws (Green)':<15} | {'Status':<8}")
-    print(f"{'-'*75}")
+        print(f"{'Filename':<30} | {'Detected Count':<16} | {'Status':<10}")
+    print(f"{'-'*70}")
 
     results = []
     for img_p in image_paths:
         fname = os.path.basename(img_p)
-        res = detect_items_non_ai(img_p, mode=current_mode)
+        res = detect_items_non_ai(img_p)
         results.append({
             "filename": fname,
-            "count": res["count"],
-            "bolt_count": res["bolt_count"],
-            "screw_count": res["screw_count"]
+            "count": res["count"]
         })
-        if current_mode == "single":
+
+        if is_screws_benchmark:
             gt = 43
             acc = max(0.0, 1.0 - abs(res["count"] - gt) / gt) * 100.0
             print(f"{fname:<30} | {res['count']:<16} | {gt:<14} | {acc:.1f}%")
         else:
-            print(f"{fname:<30} | {res['count']:<12} | {res['bolt_count']:<15} | {res['screw_count']:<15} | OK")
+            print(f"{fname:<30} | {res['count']:<16} | {'OK':<10}")
 
         if output_dir:
             out_img = os.path.join(output_dir, f"detected_{os.path.splitext(fname)[0]}.jpg")
@@ -323,35 +273,28 @@ def evaluate_dataset(dataset_dir, output_dir=None, mode="auto"):
             cv2.imwrite(out_img, res["annotated_image"])
             cv2.imwrite(out_mask, res["binary_mask"])
 
-    print(f"{'-'*75}")
+    print(f"{'-'*70}")
     counts = [r["count"] for r in results]
-    if current_mode == "single":
+    if is_screws_benchmark:
         mean_acc = np.mean([max(0.0, 1.0 - abs(c - 43) / 43) * 100.0 for c in counts])
-        print(f"Summary: Images={len(results)} | Mean Screws={np.mean(counts):.2f} / 43 | Mean Accuracy={mean_acc:.2f}% (Target: > 95%)")
+        print(f"Summary: Images={len(results)} | Mean Count={np.mean(counts):.2f} / 43 | Mean Accuracy={mean_acc:.2f}% (Target: > 95%)")
     else:
-        bolts = [r["bolt_count"] for r in results]
-        screws = [r["screw_count"] for r in results]
-        print(f"Summary: Images={len(results)} | Mean Total={np.mean(counts):.1f} | Mean Bolts={np.mean(bolts):.1f} | Mean Screws={np.mean(screws):.1f}")
-    print(f"{'='*75}\n")
+        print(f"Summary: Images={len(results)} | Mean Detected Count={np.mean(counts):.1f}")
+    print(f"{'='*70}\n")
     return results
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Non-AI Screws & Bolts Counting and Mask Overlay using OpenCV")
+    parser = argparse.ArgumentParser(description="Non-AI Object Counting and Mask Overlay using OpenCV")
     parser.add_argument("--input", type=str, default="data/Screws", help="Path to image file or directory")
     parser.add_argument("--output_dir", type=str, default="Athira_PT/Non_AI/output", help="Directory to save output visualizations")
-    parser.add_argument("--mode", type=str, choices=["auto", "single", "dual"], default="auto",
-                        help="Classification mode: 'single' (Screws only) or 'dual' (2-class: Screws vs Bolts)")
     args = parser.parse_args()
 
     if os.path.isdir(args.input):
-        evaluate_dataset(args.input, output_dir=args.output_dir, mode=args.mode)
+        evaluate_dataset(args.input, output_dir=args.output_dir)
     elif os.path.isfile(args.input):
-        res = detect_items_non_ai(args.input, mode=args.mode)
-        if res["mode"] == "single":
-            print(f"\nProcessed {args.input} [Single Mode]: Total Screws={res['count']}")
-        else:
-            print(f"\nProcessed {args.input} [Dual Mode]: Total={res['count']}, Bolts={res['bolt_count']}, Screws={res['screw_count']}")
+        res = detect_items_non_ai(args.input)
+        print(f"\nProcessed {args.input}: Detected Objects={res['count']}")
         if args.output_dir:
             os.makedirs(args.output_dir, exist_ok=True)
             fname = os.path.basename(args.input)

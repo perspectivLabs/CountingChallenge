@@ -1,7 +1,0 @@
-# YOLOv8 Instance Segmentation Dataset for Counting Challenge
-path: D:\Projects\CountingChallenge\Athira_PT\AI\yolo_dataset
-train: images/train
-val: images/val
-
-names:
-  0: fastener
