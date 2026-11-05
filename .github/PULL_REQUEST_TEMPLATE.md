@@ -34,5 +34,5 @@ Classical OpenCV pipeline at full resolution:
 <!-- Optional: Add any additional comments or context about your changes here. -->
 * Accuracy per image = `100 * (1 - |detected - truth| / truth)`. The ground truth is my own hand count of all 25 images (`Athira_PT/ground_truth.csv`); both evaluators read it.
 * The counting parameters of both solutions were tuned on the same 18 ScrewAndBolt images that produce the ScrewAndBolt scores, so those scores are tuned, not held-out results.
-* Notebooks: `Athira_PT/Non_AI/non_ai_solution.ipynb` and `Athira_PT/AI/ai_solution.ipynb` (committed without outputs; both were run end to end and print the results above).
+* Notebooks: `Athira_PT/Non_AI/non_ai_solution.ipynb` and `Athira_PT/AI/ai_solution.ipynb` (both were run end to end and print the results above; the AI notebook is committed with its executed outputs, the Non_AI notebook without).
 * Requirements files are in `Athira_PT/Non_AI/`, `Athira_PT/AI/` and the repository root. Datasets are not included.
