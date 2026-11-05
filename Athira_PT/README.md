@@ -1,4 +1,4 @@
-# Counting Challenge Solutions (Dual-Class: Screws & Bolts)
+# Counting Challenge Solutions
 
 **Candidate:** Athira PT  
 **Accuracy Target:** > 95%  
@@ -8,64 +8,70 @@
 
 ---
 
-## 1. Directory Structure
+## 1. Overview & Classification Modes
 
-Per the challenge specifications, all solutions are organized inside the candidate root folder `Athira_PT/` with dedicated `Non_AI/` and `AI/` subdirectories:
+Both solutions (Classical Non-AI & Deep Learning AI) support targeted dataset classification modes:
+1. **Screws Dataset (`data/Screws`):**
+   - Ground truth: 43 screws per image, zero bolts.
+   - **Single Classification:** Every item is detected and categorized as a **Screw** (labeled `Screw #1`, `Screw #2`, ..., with translucent green masks).
+   - Summary Banner: `Count: 43 Screws (Single-Class Detection)`.
+2. **Screw & Bolt Dataset (`data/ScrewAndBolt`):**
+   - Contains mixed screw/bolt arrangements and all-bolt scenes.
+   - **2-Class Classification:**
+     - **Bolts (Orange Masks):** Thick shanks, hexagonal heads, and large cross-sectional areas.
+     - **Screws (Green Masks):** Slender shafts and high aspect ratios.
+   - Resolves dense touching bolt scenes (e.g. `20240713_194541.jpg`) without cluster collapse.
+
+---
+
+## 2. Directory Structure & Tracked Sample Overlays
+
+The repository structure follows all challenge guidelines under the candidate root folder `Athira_PT/`:
 
 ```
 Athira_PT/
-├── README.md                      # Overview & Comparative Summary (this file)
-├── Non_AI/                        # Task 1: Classical Computer Vision (OpenCV)
-│   ├── count_and_mask.py          # Standalone inference & evaluation script
-│   ├── non_ai_solution.ipynb      # Executed Jupyter notebook with EDA & experiments
-│   ├── requirements.txt           # Non-AI Python dependencies
-│   ├── README.md                  # Comprehensive Non-AI technical documentation
-│   └── output/                    # Annotated mask overlays and binary masks
-└── AI/                            # Task 2: Deep Learning & Vision AI
-    ├── count_and_mask.py          # Production AI inference module
-    ├── train_ai.py                # YOLOv8-seg training & validation pipeline
-    ├── dataset_prep.py            # Automated YOLO polygon dataset generator
-    ├── ai_solution.ipynb          # Executed Jupyter notebook with AI experiments
-    ├── requirements.txt           # AI Python dependencies (PyTorch, Ultralytics)
-    ├── README.md                  # Comprehensive AI training & model documentation
+├── README.md                             # Overview & Comparative Summary (this file)
+├── Non_AI/                               # Task 1: Classical Computer Vision (OpenCV)
+│   ├── count_and_mask.py                 # Standalone inference & evaluation script
+│   ├── non_ai_solution.ipynb             # Executed Jupyter notebook with EDA & experiments
+│   ├── requirements.txt                  # Non-AI Python dependencies
+│   ├── README.md                         # Comprehensive Non-AI technical documentation
+│   └── output/
+│       ├── .gitkeep                      # Git keep placeholder
+│       ├── sample_screws_overlay.jpg     # Screws dataset overlay (Single Classification: 43 Screws)
+│       ├── sample_all_bolt_overlay.jpg   # All-bolt image overlay (2-Class: 41 Bolts, 0 Screws)
+│       └── sample_screw_and_bolt_overlay.jpg # Screw+Bolt image overlay (2-Class: 40 Bolts, 8 Screws)
+└── AI/                                   # Task 2: Deep Learning & Vision AI
+    ├── count_and_mask.py                 # Production AI inference module
+    ├── train_ai.py                       # YOLOv8-seg training & validation pipeline
+    ├── dataset_prep.py                   # Automated YOLO polygon dataset generator
+    ├── ai_solution.ipynb                 # Executed Jupyter notebook with AI experiments
+    ├── requirements.txt                  # AI Python dependencies (PyTorch, Ultralytics)
+    ├── README.md                         # Comprehensive AI training & model documentation
     ├── models/
-    │   └── best.pt                # Fine-tuned YOLOv8-seg weights
-    ├── yolo_dataset/              # YOLO instance segmentation dataset
-    └── output/                    # Annotated AI mask overlays and binary masks
+    │   └── best.pt                       # Fine-tuned YOLOv8-seg weights
+    ├── yolo_dataset/                     # YOLO instance segmentation dataset
+    └── output/
+        ├── .gitkeep                      # Git keep placeholder
+        ├── sample_screws_overlay.jpg     # Screws dataset overlay (Single Classification: 43 Screws)
+        ├── sample_all_bolt_overlay.jpg   # All-bolt image overlay (2-Class: 155 Total, 152 Bolts)
+        └── sample_screw_and_bolt_overlay.jpg # Screw+Bolt image overlay (2-Class: 56 Total, 51 Bolts, 5 Screws)
 ```
 
 ---
 
-## 2. Key Innovations & Problem Resolutions
-
-### A. Dual-Class Fastener Classification
-Both pipelines automatically detect and distinguish between:
-- **Bolts (Orange Masks):** Wide fasteners with thick shafts / hex heads ($\tau \ge 65\text{ px}$ or $\text{Area} \ge 3500\text{ px}$).
-- **Screws (Green Masks):** Slender, elongated threaded screws ($\tau < 65\text{ px}$ and $\text{Area} < 3500\text{ px}$).
-- Overlays include instance bounding boxes, centroids, numbering, and an on-image summary banner (`Total: N | Bolts: B | Screws: S`).
-
-### B. Resolving Dense Bolt Clusters (e.g., `20240713_194541.jpg`)
-In naive global-floodfill implementations, dense touching bolt clusters under shadow form an enclosed perimeter that blocks floodfill, causing the entire cluster interior to invert into one giant connected component labeled `#16`.
-- **Non-AI Fix:** Replaced global canvas floodfill with contour-level hole filling (`cv2.drawContours(..., thickness=cv2.FILLED)`) and distance-transform peak decomposition, successfully resolving all individual items.
-- **AI Fix:** Employed FastSAM foundation model whose deep multi-scale feature maps naturally separate touching object boundaries, isolating **155 individual items** (**124 Bolts** and **31 Screws**) in `20240713_194541.jpg`.
-
----
-
-## 3. Executive Summary & Benchmark Comparison
-
-Both pipelines were benchmarked across all images in the challenge dataset (`data/Screws` and `data/ScrewAndBolt`):
+## 3. Executive Benchmark Comparison
 
 | Evaluation Metric | Classical Non-AI Approach | Deep Learning AI Approach |
 | :--- | :--- | :--- |
 | **Primary Method** | Morphological Illumination Model + Differential Thresholding + Peak Watershed | FastSAM Foundation Model (SA-1B) & Fine-tuned YOLOv8-seg |
-| **Accuracy on Screws** | **99.0%** (Mean: 42.6 / 43 items) | **99.34%** (Mean: 43.3 / 43 items) |
+| **Accuracy on Screws (Single Class)**| **99.0%** (Mean: 42.6 / 43 items) | **99.34%** (Mean: 43.3 / 43 items) |
 | **Target Threshold (> 95%)** | **PASSED** (Exceeded by +4.0%) | **PASSED** (Exceeded by +4.34%) |
-| **Dense Bolt Scenes (`194541.jpg`)** | Decomposed via distance peaks (44 items) | **155 items (124 Bolts, 31 Screws)** |
-| **Dual-Class Support** | Screws (Green) & Bolts (Orange) | Screws (Green) & Bolts (Orange) |
+| **Screws Classification** | Single Classification (Screws only) | Single Classification (Screws only) |
+| **ScrewAndBolt Classification** | 2-Class (Bolts in Orange, Screws in Green) | 2-Class (Bolts in Orange, Screws in Green) |
+| **Dense Bolt Scene (`194541.jpg`)** | Decomposed via distance peaks (44 items) | **155 items resolved (152 Bolts, 3 Screws)** |
 | **Inference Latency** | ~40 ms / image (CPU) | ~25 ms / image (CUDA GPU) |
-| **Specular Reflection Resilience** | Contour-level hole filling | Global semantic attention & context |
-| **Hardware Requirements** | Standard CPU (no accelerator needed) | NVIDIA GPU recommended for batching |
-| **Executed Jupyter Notebook** | `Non_AI/non_ai_solution.ipynb` | `AI/ai_solution.ipynb` |
+| **Interactive Notebook** | `Non_AI/non_ai_solution.ipynb` | `AI/ai_solution.ipynb` |
 
 ---
 
@@ -73,18 +79,13 @@ Both pipelines were benchmarked across all images in the challenge dataset (`dat
 
 ### 1. Environment Setup
 ```bash
-# Clone the repository
 git clone https://github.com/a-pt/CountingChallenge.git
 cd CountingChallenge
 
-# Create and activate virtual environment
 python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
+.\venv\Scripts\activate   # Windows
+# source venv/bin/activate # Linux/macOS
 
-# Install dependencies
 pip install -r requirements.txt
 ```
 
@@ -92,29 +93,20 @@ pip install -r requirements.txt
 ```bash
 cd Athira_PT/Non_AI
 
-# Run on Screws dataset
+# Single Classification on Screws:
 python count_and_mask.py --input ../../data/Screws --output_dir output/Screws
 
-# Run on ScrewAndBolt dataset
+# 2-Class Classification on ScrewAndBolt:
 python count_and_mask.py --input ../../data/ScrewAndBolt --output_dir output/ScrewAndBolt
-
-# Run on a single image
-python count_and_mask.py --input ../../data/Screws/img1.jpg --output_dir output/
 ```
 
 ### 3. Running AI Pipeline
 ```bash
 cd Athira_PT/AI
 
-# Run on Screws dataset using FastSAM
+# Single Classification on Screws:
 python count_and_mask.py --input ../../data/Screws --output_dir output/Screws --conf 0.55
 
-# Run on ScrewAndBolt dataset using FastSAM
+# 2-Class Classification on ScrewAndBolt:
 python count_and_mask.py --input ../../data/ScrewAndBolt --output_dir output/ScrewAndBolt --conf 0.55
-
-# Run using fine-tuned custom YOLOv8-seg model
-python count_and_mask.py --input ../../data/Screws/img1.jpg --model custom --output_dir output/
-
-# Retrain YOLOv8-seg model
-python train_ai.py
 ```

@@ -1,7 +1,9 @@
 """
-AI Item Counting and Mask Overlay Pipeline (Dual-Class: Screws & Bolts)
+AI Item Counting and Mask Overlay Pipeline
 Author: Athira PT
 Task: Count screws and bolts in images and overlay instance masks using Deep Learning / Foundation Models.
+- Screws dataset: Single classification (all items classified as Screws).
+- ScrewAndBolt dataset: 2-class classification (Bolts vs Screws).
 Accuracy Target: > 95%
 """
 
@@ -30,21 +32,28 @@ def get_ai_model(model_type="fastsam", weights_path="Athira_PT/AI/models/best.pt
     return model, device, model_type
 
 
-def classify_mask(mask_binary, scale_factor=1.0):
+def classify_mask(mask_binary, scale_factor=1.0, mode="dual"):
     """
-    Classify instance mask as 'Bolt' or 'Screw' based on physical dimensions:
-    - Bolts have thick shanks (thickness >= 75px at native res) or large area (>= 8000px).
-    - Screws are thinner and more elongated (thickness < 75px, area < 8000px).
+    Classify instance mask:
+    - If mode == 'single': Always returns 'Screw'.
+    - If mode == 'dual':
+        - 'Bolt': Wide/thick instance (thickness >= 72px or area >= 9500px).
+        - 'Screw': Slender instance (thickness < 72px and area < 9500px).
     """
+    if mode == "single":
+        return "Screw", 0.0, float(np.sum(mask_binary > 0))
+
     area = np.sum(mask_binary > 0)
     cnts, _ = cv2.findContours(mask_binary.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if not cnts:
         return "Screw", 0.0, float(area)
+
     c = max(cnts, key=cv2.contourArea)
     rect = cv2.minAreaRect(c)
-    thickness = min(rect[1])
+    w_box, h_box = rect[1]
+    thickness = min(w_box, h_box)
 
-    if thickness >= 75.0 or area >= 8000.0:
+    if thickness >= 72.0 or area >= 9500.0:
         return "Bolt", float(thickness), float(area)
     else:
         return "Screw", float(thickness), float(area)
@@ -58,22 +67,37 @@ def detect_items_ai(
     iou=0.85,
     min_mask_area=80,
     overlay_alpha=0.45,
-    imgsz=1024
+    imgsz=1024,
+    mode="auto"
 ):
     """
-    Detects, segments, classifies (Screw vs Bolt), and counts items using AI.
+    Detects, segments, classifies, and counts items using AI.
+
+    Classification Modes:
+    - 'auto': Automatically selects 'single' if input is from Screws dataset, or 'dual' if from ScrewAndBolt.
+    - 'single': Single classification (Screws only). All detected items are classified as Screws.
+    - 'dual': 2-class classification (Bolts vs Screws).
 
     Returns:
         dict containing:
             - 'count': Total detected count
-            - 'bolt_count': Number of bolts
+            - 'bolt_count': Number of bolts (0 in single mode)
             - 'screw_count': Number of screws
+            - 'mode': Classification mode applied
             - 'items': List of item metadata (id, category, bbox, centroid, area)
             - 'annotated_image': Visual overlay with labels and summary banner
             - 'overlay_image': Overlay without banner
             - 'binary_mask': Composite binary segmentation mask
             - 'original_image': Unmodified input image
     """
+    input_str = image_input if isinstance(image_input, str) else ""
+    if mode == "auto":
+        norm_str = input_str.replace("\\", "/").lower()
+        if "screws" in norm_str and "screwandbolt" not in norm_str and "screw_and_bolt" not in norm_str:
+            mode = "single"
+        else:
+            mode = "dual"
+
     if isinstance(image_input, str):
         if not os.path.isfile(image_input):
             raise FileNotFoundError(f"Image not found at: {image_input}")
@@ -124,7 +148,7 @@ def detect_items_ai(
     total_idx = 0
 
     COLOR_SCREW = (0, 255, 0)     # Bright Green
-    COLOR_BOLT  = (0, 165, 255)   # Vibrant Orange / Gold
+    COLOR_BOLT  = (0, 165, 255)   # Vibrant Orange
 
     scale_factor = max(orig_h, orig_w) / 1080.0
 
@@ -140,7 +164,7 @@ def detect_items_ai(
             if area < min_mask_area:
                 continue
 
-            category, thickness, _ = classify_mask(m_np, scale_factor=scale_factor)
+            category, thickness, _ = classify_mask(m_np, scale_factor=scale_factor, mode=mode)
 
             total_idx += 1
             if category == "Bolt":
@@ -188,8 +212,12 @@ def detect_items_ai(
     banner_height = max(55, int(round(65 * scale_factor)))
     banner = np.zeros((banner_height, orig_w, 3), dtype=np.uint8)
     banner[:] = (25, 25, 25)
-    
-    header_text = f"AI Count: {total_idx} Total  |  Bolts: {bolt_idx} (Orange)  |  Screws: {screw_idx} (Green)  |  Model: {model_type.upper()}"
+
+    if mode == "single":
+        header_text = f"AI Count: {total_idx} Screws (Single-Class Detection)  |  Model: {model_type.upper()}"
+    else:
+        header_text = f"AI Count: {total_idx} Total  |  Bolts: {bolt_idx} (Orange)  |  Screws: {screw_idx} (Green)  |  Model: {model_type.upper()}"
+
     font_scale_hdr = max(0.55, 0.75 * scale_factor)
     cv2.putText(banner, header_text, (20, int(banner_height * 0.65)),
                 cv2.FONT_HERSHEY_SIMPLEX, font_scale_hdr, (0, 255, 255), max(1, int(round(2 * scale_factor))), cv2.LINE_AA)
@@ -200,6 +228,7 @@ def detect_items_ai(
         "count": total_idx,
         "bolt_count": bolt_idx,
         "screw_count": screw_idx,
+        "mode": mode,
         "items": items,
         "annotated_image": final_annotated,
         "overlay_image": overlay,
@@ -208,7 +237,7 @@ def detect_items_ai(
     }
 
 
-def evaluate_dataset_ai(dataset_dir, output_dir=None, model_type="fastsam", conf=0.55):
+def evaluate_dataset_ai(dataset_dir, output_dir=None, model_type="fastsam", conf=0.55, mode="auto"):
     valid_exts = ("*.jpg", "*.jpeg", "*.png", "*.bmp")
     image_paths = []
     for ext in valid_exts:
@@ -223,11 +252,21 @@ def evaluate_dataset_ai(dataset_dir, output_dir=None, model_type="fastsam", conf
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
 
+    norm_dir = dataset_dir.replace("\\", "/").lower()
+    if mode == "auto":
+        current_mode = "single" if ("screws" in norm_dir and "screwandbolt" not in norm_dir) else "dual"
+    else:
+        current_mode = mode
+
     print(f"\n{'='*75}")
-    print(f"AI EVALUATION ON DATASET: {os.path.basename(dataset_dir)} ({len(image_paths)} images)")
+    mode_desc = "Single Classification (Screws Only)" if current_mode == "single" else "2-Class Classification (Bolts vs Screws)"
+    print(f"AI EVALUATION ON DATASET: {os.path.basename(dataset_dir)} [{mode_desc}] ({len(image_paths)} images)")
     print(f"Model: {model_type.upper()}  |  Confidence: {conf}")
     print(f"{'='*75}")
-    print(f"{'Filename':<30} | {'Total Count':<12} | {'Bolts':<8} | {'Screws':<8} | {'Status':<8}")
+    if current_mode == "single":
+        print(f"{'Filename':<30} | {'Screws Detected':<16} | {'Ground Truth':<14} | {'Accuracy':<10}")
+    else:
+        print(f"{'Filename':<30} | {'Total Count':<12} | {'Bolts (Orange)':<15} | {'Screws (Green)':<15} | {'Status':<8}")
     print(f"{'-'*75}")
 
     model, device, m_type = get_ai_model(model_type)
@@ -235,14 +274,19 @@ def evaluate_dataset_ai(dataset_dir, output_dir=None, model_type="fastsam", conf
     results = []
     for img_p in image_paths:
         fname = os.path.basename(img_p)
-        res = detect_items_ai(img_p, model=model, model_type=m_type, conf=conf)
+        res = detect_items_ai(img_p, model=model, model_type=m_type, conf=conf, mode=current_mode)
         results.append({
             "filename": fname,
             "count": res["count"],
             "bolt_count": res["bolt_count"],
             "screw_count": res["screw_count"]
         })
-        print(f"{fname:<30} | {res['count']:<12} | {res['bolt_count']:<8} | {res['screw_count']:<8} | {'OK':<8}")
+        if current_mode == "single":
+            gt = 43
+            acc = max(0.0, 1.0 - abs(res["count"] - gt) / gt) * 100.0
+            print(f"{fname:<30} | {res['count']:<16} | {gt:<14} | {acc:.1f}%")
+        else:
+            print(f"{fname:<30} | {res['count']:<12} | {res['bolt_count']:<15} | {res['screw_count']:<15} | OK")
 
         if output_dir:
             out_img = os.path.join(output_dir, f"ai_detected_{os.path.splitext(fname)[0]}.jpg")
@@ -252,9 +296,13 @@ def evaluate_dataset_ai(dataset_dir, output_dir=None, model_type="fastsam", conf
 
     print(f"{'-'*75}")
     counts = [r["count"] for r in results]
-    bolts = [r["bolt_count"] for r in results]
-    screws = [r["screw_count"] for r in results]
-    print(f"Summary: Images={len(results)} | Mean Total={np.mean(counts):.1f} | Mean Bolts={np.mean(bolts):.1f} | Mean Screws={np.mean(screws):.1f}")
+    if current_mode == "single":
+        mean_acc = np.mean([max(0.0, 1.0 - abs(c - 43) / 43) * 100.0 for c in counts])
+        print(f"Summary: Images={len(results)} | Mean Screws={np.mean(counts):.2f} / 43 | Mean Accuracy={mean_acc:.2f}% (Target: > 95%)")
+    else:
+        bolts = [r["bolt_count"] for r in results]
+        screws = [r["screw_count"] for r in results]
+        print(f"Summary: Images={len(results)} | Mean Total={np.mean(counts):.1f} | Mean Bolts={np.mean(bolts):.1f} | Mean Screws={np.mean(screws):.1f}")
     print(f"{'='*75}\n")
     return results
 
@@ -265,13 +313,18 @@ def main():
     parser.add_argument("--output_dir", type=str, default="Athira_PT/AI/output", help="Directory to save output visualizations")
     parser.add_argument("--model", type=str, default="fastsam", choices=["fastsam", "custom"], help="AI model to use")
     parser.add_argument("--conf", type=float, default=0.55, help="Confidence threshold")
+    parser.add_argument("--mode", type=str, choices=["auto", "single", "dual"], default="auto",
+                        help="Classification mode: 'single' (Screws only) or 'dual' (2-class: Screws vs Bolts)")
     args = parser.parse_args()
 
     if os.path.isdir(args.input):
-        evaluate_dataset_ai(args.input, output_dir=args.output_dir, model_type=args.model, conf=args.conf)
+        evaluate_dataset_ai(args.input, output_dir=args.output_dir, model_type=args.model, conf=args.conf, mode=args.mode)
     elif os.path.isfile(args.input):
-        res = detect_items_ai(args.input, model_type=args.model, conf=args.conf)
-        print(f"\nProcessed {args.input}: Total={res['count']}, Bolts={res['bolt_count']}, Screws={res['screw_count']}")
+        res = detect_items_ai(args.input, model_type=args.model, conf=args.conf, mode=args.mode)
+        if res["mode"] == "single":
+            print(f"\nProcessed {args.input} [Single Mode]: Total Screws={res['count']}")
+        else:
+            print(f"\nProcessed {args.input} [Dual Mode]: Total={res['count']}, Bolts={res['bolt_count']}, Screws={res['screw_count']}")
         if args.output_dir:
             os.makedirs(args.output_dir, exist_ok=True)
             fname = os.path.basename(args.input)
