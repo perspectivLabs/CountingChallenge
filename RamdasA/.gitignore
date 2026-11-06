@@ -12,6 +12,8 @@ AI/colab_dataset/
 AI/rfdetr_dataset/
 AI/downloaded_yolo_dataset/
 AI/sam_vit_b_01ec64.pth
+AI/results/nuts_1280/
+AI/results/final/
 
 # Python
 __pycache__/
