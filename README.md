@@ -1,43 +1,25 @@
-# CountingChallenge - Abhijeet Kale
+# CountingChallenge
 
-Counts screws/bolts/nuts in each image and overlays a colored mask per object.
+## Task definiton
+* Count the number of items in the image and overlay masks for the same.
+* Accuracy should be > 95%
 
-## Non_AI (`Non_AI/count_nonai.py`, OpenCV only)
-1. Grayscale, flatten uneven lighting (divide by a heavily blurred background).
-2. Otsu threshold + morphological open/close, plus an absolute-darkness gate (removes vignette).
-3. Connected components; drop specks and lens-vignette blobs at the image edges/corners.
-4. Touching objects: `count = round(blob_area / median_single_object_area)`.
-5. Colored mask overlay with the count written on the image.
+## Task list
+1) Achieve the task definition using any Non-AI techniques (ex. OpenCV, etc)
+2) Achieve the task definition using any AI techniques
 
-Run: `pip install -r Non_AI/requirements.txt && python Non_AI/count_nonai.py <image_dir> <out_dir>`
-Overlays and counts for all provided images are in `Non_AI/results/`.
+## Note
+* All tasks from the Task List are expected to be completed
+* Requirement files are expected to be added.
+* Colab/Kaggle notebooks can be used, but the ```ipynb``` file must be added.
+* The dataset is available [here](https://drive.google.com/drive/folders/1TuM4CgGI3WBqOHNFjuzjaEzLOH5Yw43_?usp=sharing).
+* Create a root folder with your name in the git.
+* There has to be 2 folders viz. "AI" and "Non_AI" containing solutions to the respectiv tasks within the above root folder.
 
-## AI (`AI/count_sam.py`, Segment Anything)
-SAM ViT-B automatic mask generator, then filtering: remove background-size masks, keep only masks darker
-than the backdrop, drop masks under 30% of the median area (heads/threads), and de-duplicate overlapping
-masks (NMS). Count = remaining masks. No training was done (zero-shot), so there is no training procedure.
-
-Run on a GPU (Colab/Kaggle): `pip install -r AI/requirements.txt && python AI/count_sam.py <image_dir> <out_dir>`
-Overlays and counts are in `AI/Results/`.
-
-## Results (Screws_2024_07_15, true count 43 in every image)
-
-| Image | True | Non_AI | AI (SAM) |
-|---|---|---|---|
-| img1 | 43 | 43 | 42 |
-| img1_43_nosy | 43 | 43 | 42 |
-| img2 | 43 | 43 | 42 |
-| img3 | 43 | 43 | 43 |
-| img4 | 43 | 43 | 43 |
-| img5 | 43 | 43 | 41 |
-| img6 | 43 | 43 | 44 |
-
-Accuracy (1 - mean abs error / true count): Non_AI 100%, AI about 97%.
-The true count of 43 was confirmed by a manual count on img3 and by the file name `img1_43_nosy.jpg`.
-No ground-truth labels were provided with the data.
-
-## Limitations
-- Separated objects (Screws_2024_07_15 and the sparse ScrewAndBolt images) count reliably.
-- Dense piles in ScrewAndBolt (hundreds of touching screws/nuts) are approximate for both methods.
-  Hidden objects cannot be counted from a top-down 2D image. SAM undercounts touching screws there,
-  and the area-ratio estimate in Non_AI is approximate.
+## Steps to submit the solutions
+* Fork this repository.
+* Push the solution into the folders sepecified.
+* Raise a PR with your name as per resume to this repository from your forked repository.
+* Cleanup unwanted files by putting the path in the .gitignore.
+* No need of including the data files into GIT.
+* Write or provide the training method used for AI training purpose if any. 
