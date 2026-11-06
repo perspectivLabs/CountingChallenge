@@ -1,0 +1,8 @@
+data/
+ScrewAndBolt_20240713/
+Screws_2024_07_15/
+*.zip
+*.pt
+*.pth
+__pycache__/
+.ipynb_checkpoints/
