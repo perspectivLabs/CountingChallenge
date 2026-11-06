@@ -95,7 +95,7 @@ def main():
     ap.add_argument("--input", required=True)
     ap.add_argument("--output", default="results")
     ap.add_argument("--gt", default=None)
-    ap.add_argument("--conf", type=float, default=0.35)
+    ap.add_argument("--conf", type=float, default=0.10, help="confidence threshold (0.10 chosen by --sweep on training images)")
     ap.add_argument("--dup", type=float, default=0.5,
                     help="two masks overlapping more than this (of the smaller) count as one object")
     ap.add_argument("--test-only", action="store_true", help="only the held-out test images")

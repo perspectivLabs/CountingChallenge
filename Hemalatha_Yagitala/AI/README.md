@@ -62,6 +62,13 @@ Trained weights: `weights/best.pt` (6 MB).
 
 ## Limitations and next steps
 - The labels came from an earlier version of the Non-AI pipeline, so the model inherited some of its
-  mistakes (for example, under-counting in tangled piles). Retraining on the improved masks (99.61% Non-AI
-  accuracy), or on hand-corrected masks, is the clearest next improvement.
-- A GPU would allow the larger `yolo11s-seg` model and full-resolution tiles. Only CPU was available here.
+  mistakes (for example, under-counting in tangled piles). Next steps: split by scene, hand-correct the
+  training masks, then retrain.
+- Training ran on a laptop CPU (Intel Core i5-4200U, ~16.6 h), so the small `yolo11n-seg` model was used.
+  With a GPU, the next step would be the larger `yolo11s-seg` model and larger tiles.
+- The best duplicate threshold (0.5) was the lowest value in the sweep grid. The next sweep should extend
+  it downward (0.3–0.4). Six grid settings scored between 98.65% and 98.99% on training images, so the
+  result doesn't depend on one lucky setting.
+- The test images are new photos of the same piles seen in training, so 99.00% measures accuracy on new
+  photos of familiar scenes, not on unseen scenes. A scene-level split is the right next evaluation.
+- Validation mAP (0.968) measures agreement with the Non-AI labels, not with the true masks.

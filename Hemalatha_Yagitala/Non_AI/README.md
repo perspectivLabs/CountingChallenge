@@ -22,8 +22,9 @@ The dataset has three regimes, and each needs a different idea:
    has a round through-hole. If an image has many circular enclosed holes of consistent size, each
    hole seeds one nut, and nut pixels go to the nearest hole within the nut radius.
    Gaps between touching nuts aren't circular, so they're rejected.
-3. **Screws and bolts, sparse or piled.** Watershed over-splits elongated screws, so counting is
-   area-based: each blob is counted as round(area / single-object area). The single-object area
+3. **Screws and bolts, sparse or piled.** Watershed splits blobs at distance-transform peaks, and
+   long thin objects like screws tend to produce several peaks each. So counting is area-based instead
+   (watershed was not tested as a baseline): each blob is counted as round(area / single-object area). The single-object area
    comes from an iterated median over blob areas in each image, so it adapts to zoom. Round, solid
    blobs (screws standing upright) get their own reference area. Inside merged clusters,
    upright screws are found as thick distance-transform cores and counted separately.

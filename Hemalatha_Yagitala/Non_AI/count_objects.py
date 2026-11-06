@@ -14,7 +14,7 @@ Pipeline (classical computer vision only: OpenCV + NumPy + SciPy):
      estimated per image with an iterated median, so it adapts to scale. Round,
      solid blobs (screws standing upright) get their own reference area, and inside
      merged clusters they are found as thick distance-transform cores and counted
-     separately. Clusters of 3+ objects round with a -0.2 bias, since overlap hides area.
+     separately. Clusters larger than 4 objects round with a -0.2 bias, since overlap hides area.
   6. Instance masks         - a blob counted as n objects is split into n masks by
      k-means on (x, y, local orientation), so crossing screws split along their axes.
 
@@ -207,7 +207,7 @@ def count_image(path, long_side=2000, round_bias=-0.2):
                 rest_a = max(0.0, a - k * disc_unit)
                 n = max(1, k + int(np.floor(rest_a / unit + 0.5 + (round_bias if rest_a > BIAS_MIN_UNITS * unit else 0))))
             else:
-                # overlap hides area only in real clusters (3+ objects): bias those, not pairs
+                # overlap hides area only in large clusters (> BIAS_MIN_UNITS objects): bias those, not pairs or small groups
                 b = round_bias if a > BIAS_MIN_UNITS * unit else 0.0
                 n = max(1, int(np.floor(a / unit + 0.5 + b)))
             for m in split_component(sub, n, scale=np.sqrt(unit)):
