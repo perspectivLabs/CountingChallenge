@@ -1,0 +1,30 @@
+# Dataset images (not to be committed)
+data/
+*.zip
+Screws_2024_07_15/
+ScrewAndBolt_20240713/
+
+# Large dataset folders
+AI/yolo_dataset/
+AI/v4_*/
+AI/yolo_training/
+AI/colab_dataset/
+AI/rfdetr_dataset/
+AI/downloaded_yolo_dataset/
+AI/sam_vit_b_01ec64.pth
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# Debug/temp images
+AI/Non_AI/*.png
+Non_AI/pipeline_*.png
+Non_AI/area_distribution.png
+Non_AI/all_results_*.png
+
+# Env
+bespin_env*/
+*.egg-info/
