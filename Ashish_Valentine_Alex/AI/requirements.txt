@@ -1,0 +1,6 @@
+ultralytics>=8.4.202
+sahi==0.14.0
+pandas
+matplotlib
+pillow
+shapely
