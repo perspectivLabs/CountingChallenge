@@ -161,7 +161,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-Srihari_M/data/
+Srihari_M/data/*
+!Srihari_M/data/README.md
 Srihari_M/Non_AI/Output/
 *.pyc
 
@@ -172,5 +173,6 @@ Srihari_M/Non_AI/Output/
 *.safetensors
 runs/
 wandb/
-Srihari_M/AI/dataset/
+Srihari_M/AI/dataset/*
+!Srihari_M/AI/dataset/README.md
 Srihari_M/AI/sam3.pt
