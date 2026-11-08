@@ -1,0 +1,10 @@
+# PyTorch with CUDA: install the wheel matching your GPU/driver first, e.g.
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu129
+torch>=2.1
+torchvision>=0.16
+ultralytics>=8.3
+numpy>=1.24
+opencv-python>=4.8
+# synth_data.py reuses the classical segmentation to cut out isolated items
+scipy>=1.10
+scikit-image>=0.21
