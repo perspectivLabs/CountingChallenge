@@ -164,3 +164,13 @@ cython_debug/
 Srihari_M/data/
 Srihari_M/Non_AI/Output/
 *.pyc
+
+# AI: weights, training runs, datasets, secrets
+*.pt
+*.pth
+*.onnx
+*.safetensors
+runs/
+wandb/
+Srihari_M/AI/dataset/
+Srihari_M/AI/sam3.pt
