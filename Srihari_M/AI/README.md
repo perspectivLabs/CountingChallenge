@@ -11,13 +11,15 @@
 
 ## Setup
 
-Use Python with PyTorch and an Ultralytics version that provides `SAM3SemanticPredictor`. Install the core Python packages with:
+Use Python with PyTorch and an Ultralytics version that provides `SAM3SemanticPredictor`. Install the AI implementation's Python packages from the repository root with:
 
 ```bash
-python3 -m pip install ultralytics opencv-python numpy tqdm
+python3 -m pip install -r Srihari_M/AI/requirements.txt
 ```
 
-Place the downloaded model file at `Srihari_M/AI/sam3.pt`. Download/extract the dataset so image files are under `Srihari_M/AI/dataset/train/images`. AI package versions and GPU requirements depend on the PyTorch/Ultralytics build and available hardware.
+The `requirements.txt` file covers both batch inference and the annotation viewer. PyTorch versions and GPU support depend on the available hardware; install the appropriate PyTorch build for your system if needed.
+
+Place the downloaded model file at `Srihari_M/AI/sam3.pt`. Download/extract the dataset so image files are under `Srihari_M/AI/dataset/train/images`.
 
 ## Run inference
 
