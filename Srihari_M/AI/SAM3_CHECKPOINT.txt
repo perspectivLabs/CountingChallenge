@@ -1,0 +1,8 @@
+SAM3 checkpoint download link
+
+Drive URL: https://drive.google.com/drive/folders/1PC4Y-wLq7vr8Sn0hjwdz1SPATHgaiy3d?usp=sharing
+
+After downloading, save the checkpoint as:
+Srihari_M/AI/sam3.pt
+
+The checkpoint is excluded from Git. Confirm that the Drive link is accessible to the people who need to run inference.
