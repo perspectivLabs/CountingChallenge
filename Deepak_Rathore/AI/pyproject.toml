@@ -1,0 +1,20 @@
+[project]
+name = "counting-challenge"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "AlgoDr", email = "77325895+AlgoDr@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib>=3.11.2",
+    "ultralytics>=8.4.210",
+]
+
+[project.scripts]
+counting-challenge = "counting_challenge:main"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
