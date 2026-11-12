@@ -1,0 +1,3 @@
+model,verified_images,ground_truth_total,predicted_total,total_absolute_error,aggregate_count_accuracy_percent
+OpenCV V2,4,62.0,84,22.0,64.51612903225806
+Grounding DINO,4,62.0,71,9.0,85.48387096774194

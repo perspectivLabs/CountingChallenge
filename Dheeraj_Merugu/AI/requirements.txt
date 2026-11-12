@@ -1,0 +1,7 @@
+torch
+transformers==4.51.3
+accelerate
+pandas
+numpy
+Pillow
+nbformat

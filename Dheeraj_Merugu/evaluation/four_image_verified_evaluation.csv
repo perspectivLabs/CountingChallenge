@@ -1,0 +1,5 @@
+dataset,filename,opencv_v2_count,grounding_dino_count,count_difference,ground_truth,opencv_absolute_error,dino_absolute_error
+ScrewAndBolt_20240713,20240713_192951.jpg,31,26,-5,21.0,10.0,5.0
+ScrewAndBolt_20240713,20240713_193135.jpg,21,21,0,21.0,0.0,0.0
+ScrewAndBolt_20240713,20240713_193650.jpg,17,13,-4,10.0,7.0,3.0
+ScrewAndBolt_20240713,20240713_193659.jpg,15,11,-4,10.0,5.0,1.0
