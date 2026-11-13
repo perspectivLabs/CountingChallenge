@@ -1,30 +1,4 @@
-"""AI object counting with FastSAM (zero-shot instance segmentation).
 
-FastSAM is a YOLOv8-seg model trained on Meta's SA-1B "segment anything"
-dataset (11M images, 1.1B masks). It segments *every* object in an image
-without being told the class, so no training on this dataset is needed.
-
-Pipeline (per image):
-  1. Resize so the long side is WORK_SIZE px.
-  2. Slice into overlapping TILE x TILE tiles (objects in the dense piles
-     are small, so running on tiles keeps them large enough for the model).
-     Each tile -> FastSAM -> instance masks.
-  3. A mask is kept only from the tile whose centre is nearest to the mask
-     centroid, so every object is owned by exactly one tile and no
-     cross-tile merging is needed (the overlap is larger than an object).
-  4. Filter the masks into "one object" masks:
-       - background / shadow masks: must be clearly darker than the
-         (median) background brightness,
-       - tiny fragments and huge region masks: area relative to the median
-         object area,
-       - "group" masks that cover several other masks are dropped and their
-         members kept; "part" masks (e.g. a screw head) that lie inside a
-         kept mask are dropped.
-  5. Count = number of remaining masks; each is painted in its own colour.
-
-Usage:
-  python count_ai.py --data ../../data --out outputs [--model FastSAM-s.pt]
-"""
 import argparse
 import csv
 import glob
