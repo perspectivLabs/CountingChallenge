@@ -1,27 +1,4 @@
-"""Non-AI object counting (screws, bolts, nuts) with classical OpenCV.
 
-Pipeline (per image):
-  1. Resize so the long side is WORK_SIZE px.
-  2. Flatten the illumination: estimate the background with a large grey-level
-     closing (which removes the dark objects), then divide the image by it.
-     This removes vignetting and colour casts. Otsu threshold -> foreground.
-  3. Find "holes": enclosed, round, bright regions inside the foreground with
-     a consistent size. Every hex nut has exactly one, so each hole = one nut.
-  4. Connected components of the hole-filled mask. Two reference areas are
-     estimated robustly from the blobs themselves (iterated median, which
-     locks onto the most common blob size, i.e. a single object):
-        nut_area   - from blobs that contain exactly one hole
-        part_area  - from blobs without holes (screws / bolts)
-  5. Count per blob:
-        n_holes + round(max(0, area - n_holes * nut_area) / part_area)
-     (blobs without holes reduce to round(area / part_area), at least 1).
-  6. Instance masks: watershed seeded at the hole centres and at
-     distance-transform peaks (k-means on pixel coordinates as a fallback),
-     so a cluster of k touching objects is split into k coloured masks.
-
-Usage:
-  python count_non_ai.py --data ../../data --out outputs
-"""
 import argparse
 import csv
 import glob
