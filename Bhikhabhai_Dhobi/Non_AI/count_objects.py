@@ -3,14 +3,20 @@
 Pipeline (per image):
   1. Resize to a fixed working size and flatten uneven lighting on the LAB
      lightness channel (divide by a smooth background estimate).
-  2. Otsu threshold -> foreground mask of dark objects.
-  3. Find enclosed bright holes (round, hole-sized) -> one seed per hex nut.
-  4. Estimate the area of a single loose object in this image from the
-     distribution of isolated blob areas.
-  5. For every blob without holes, expected count k = round(area / unit).
-     The k strongest, well-separated distance-transform peaks become seeds.
-  6. Marker-controlled watershed on the distance transform gives one region
-     per object -> count + coloured mask overlay.
+  2. Otsu threshold -> foreground mask of dark objects. Dust specks and the
+     dark lens-vignette corners (long contact with the frame) are removed.
+  3. Nut holes: enclosed bright regions that are hole-sized and round
+     (circularity >= 0.8; triangular gaps between touching nuts are < 0.7).
+     Hole mode is used only if an image has >= 5 consistent holes, so a few
+     gaps enclosed between touching screws are not mistaken for nuts.
+  4. Nut blobs: one cell per hole (nearest-hole split), plus extra seeds when
+     a blob is clearly bigger than its holes explain (a hole hidden by a
+     neighbour).
+  5. Other blobs: the area of one loose object is estimated per image; a blob
+     holds k = round(area / unit) objects. k well-separated distance peaks
+     are seeds, and a marker watershed whose landscape mixes the distance map
+     with image brightness cuts touching parts along their bright rims.
+  6. One region per object -> count, coloured mask overlay, counts.csv.
 
 Usage:
   python count_objects.py --data ../../data --out output

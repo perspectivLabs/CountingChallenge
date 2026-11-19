@@ -2,9 +2,9 @@ task: segment
 mode: train
 model: yolo11s-seg.pt
 data: /content/dataset/data.yaml
-epochs: 80
+epochs: 100
 time: null
-patience: 20
+patience: 30
 batch: 16
 imgsz: 640
 save: true
@@ -88,7 +88,7 @@ hsv_s: 0.7
 hsv_v: 0.3
 degrees: 180
 translate: 0.1
-scale: 0.3
+scale: 0.5
 shear: 0.0
 perspective: 0.0
 flipud: 0.5
