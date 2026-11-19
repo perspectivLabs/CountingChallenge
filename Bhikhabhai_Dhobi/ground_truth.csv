@@ -1,0 +1,18 @@
+image,count,method
+img1,43,hand count (matches dataset file name img1_43_nosy)
+img1_43_nosy,43,dataset label in file name
+img2,43,hand count
+img3,43,hand count
+img4,43,hand count
+img5,43,hand count
+img6,43,hand count
+20240713_192951,21,hand count
+20240713_193135,21,hand count
+20240713_193650,10,hand count
+20240713_193659,10,hand count
+20240713_194200,102,audit: dot per detection checked cell by cell (1 merge and 2 splits found)
+20240713_194206,103,audit: dot per detection checked cell by cell (2 splits found)
+20240713_194316,98,audit: dot per detection checked cell by cell (1 split found; one spot uncertain +-1)
+20240713_194621,354,audit: every nut has one dot; one extra dot on a gap between 4 nuts was missed in the first pass and found later (355 -> 354)
+20240713_194541,354,audit: one nut had 3 dots (2 on triangular gaps between nuts); same 354 nuts as the other pile photos
+20240713_193839,196,audit: 3 screws with no dot (overlap hides area so blob counted too low) and 1 miss+split pair; densest image so +-2
