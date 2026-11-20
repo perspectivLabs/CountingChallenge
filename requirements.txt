@@ -1,0 +1,34 @@
+# Common Python dependencies for both Non_AI/ and AI/ pipelines.
+#
+# Verified environment (conda env: matrixta_test):
+#   Python 3.14.10 | torch 2.15.0+cu132 | torchvision 0.29.2+cu132
+#   ultralytics 8.4.216 | opencv-python 5.1.0.95 | numpy 2.5.5
+#
+# GPU Note:
+#   For NVIDIA CUDA acceleration, install PyTorch matching your CUDA toolkit first
+#   (see https://pytorch.org/get-started/locally/), then run:
+#     pip install -r requirements.txt
+
+# --- Core Computer Vision & Numerics (Non_AI/ + AI/) ---
+numpy>=2.0.0
+opencv-python>=4.10.0
+pillow>=10.0.0
+
+# --- Deep Learning & Segmentation Models (AI/: YOLO11-seg, SAM 2.1, FastSAM, MobileSAMv2, YOLOE) ---
+torch>=2.4.0
+torchvision>=0.19.0
+ultralytics>=8.4.0
+ultralytics-thop>=2.0.0
+
+# --- Dataset Config, Visualization & Runtime Utilities (AI/) ---
+PyYAML>=6.0.0
+matplotlib>=3.9.0
+polars>=1.0.0
+psutil>=6.0.0
+requests>=2.32.0
+
+# --- Zero-Shot Benchmark Dependencies (AI/benchmark_zeroshot.py & AI/yolo_segment.py) ---
+# huggingface-hub: downloads MobileSAMv2 ObjectAwareModel.pt
+huggingface-hub>=0.25.0
+# Ultralytics CLIP fork: required for YOLOE text-prompt embeddings (get_text_pe)
+git+https://github.com/ultralytics/CLIP.git
