@@ -21,3 +21,5 @@ If i had to go for a production use case i would choose Non_AI technique as it p
 I have described the implementation of my approach and results in detail inside the AI and Non_AI folders with their own readme files.
 
 I am also attaching the common requirements.txt in the root folder which will work against both AI and Non_AI code
+
+I have given public access to the drive links containing the results but incase you are unable to open the link and download the results then kindly send a mail to kdineshkarthikeyan@gmail.com
