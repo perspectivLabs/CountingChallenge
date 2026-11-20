@@ -1,0 +1,5 @@
+# training ran in Google Colab (T4); inference runs on CPU
+ultralytics==8.3.40
+torch>=2.1
+numpy>=1.24
+opencv-python>=4.8
